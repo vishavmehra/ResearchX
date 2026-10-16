@@ -58,6 +58,163 @@ The suggested path through the product:
   and edge. External sources can be proposed for review; private documents never can.
 - **Private library.** Each user's uploaded documents are searched only for that user, under row-level security.
 
+## Nebius Token Factory & NVIDIA AI Integration
+
+Every model call in ResearchX goes through **Nebius Token Factory**, and the language work is done by **NVIDIA Nemotron**
+models: ranking retrieved passages, writing cited answers and extracting experimental settings. Embeddings for semantic
+search come from Qwen3-Embedding-8B, also served by Nebius. The models do the language work; deterministic code decides
+what counts as evidence, checks every citation and decides when to abstain.
+
+### How ResearchX connects to Nebius Token Factory
+
+- **One gateway, one OpenAI-compatible API.** Application code never calls a provider directly: it asks
+  `services/model_gateway/gateway.py` for a *task* (reranking, synthesis, extraction, embedding). The gateway talks to
+  Nebius Token Factory's OpenAI-compatible endpoint configured in `config/models.yaml`
+  (`https://api.tokenfactory.nebius.com/v1/`) over plain HTTPS, authenticated with the `NEBIUS_API_KEY` bearer token:
+  `GET /models` resolves the configured model names against the account's live catalog, `POST /chat/completions`
+  generates (temperature 0, `response_format` set to a strict `json_schema`), and `POST /embeddings` embeds.
+- **Models are configuration.** Each task lists its candidate models, timeout, retry budget and token limit in
+  `config/models.yaml`; changing a model needs no code change.
+- **Failure handling.** Each route has its own timeout and retries; a route that fails three times within five minutes is
+  skipped until the window passes (health circuit). Call records keep hashes and sizes, never prompt text or keys.
+- **Private data.** Nebius is the only provider approved for private documents (`private_data: true`); the router never
+  sends a context containing private passages to a provider without that flag, and evidence providers never receive them.
+
+### Which model does what
+
+| Model / provider | ResearchX responsibility | When it is used | Implementation status |
+|---|---|---|---|
+| **NVIDIA Nemotron 3 Nano 30B-A3B** (Nebius) | Reranking: grades the top 20 retrieved passages 0–3 | Every research run that retrieves (not on an answer-cache hit) | Active in production (verified 2026-10-16) |
+| Nemotron 3 Nano 30B-A3B | Passage synthesis: claims, each with a verbatim quote and its source | Routine questions | Active in production (verified 2026-10-16) |
+| Nemotron 3 Nano 30B-A3B | Field extraction: requested settings and values with verbatim spans, from stored passages | Parameter and score questions whose values the validated records do not already hold | Implemented; not separately exercised in the production checks |
+| Nemotron 3 Nano 30B-A3B | Experiment extraction in the offline dataset pipeline | Building the corpus release | Implemented (offline, not in the request path) |
+| **NVIDIA Nemotron 3 Super 120B-A12B** (Nebius) | Synthesis for comparison and contradiction questions | When the question's intent is a comparison or a contradiction | Active in production (verified 2026-10-16) |
+| Nemotron 3 Super 120B-A12B | Full-text extraction with reasoning enabled | Analyses that read a paper's full text, and papers read at request time | Implemented; verified locally (2026-10-14/15), not in the production checks |
+| Nano ↔ Super | One validated fallback to the other tier | An output fails schema or citation validation and the latency budget still has room | Implemented; every use is traced |
+| **Qwen3-Embedding-8B** (Nebius; not an NVIDIA model) | Query and document embeddings for pgvector, stored at 256 dimensions | Every retrieval (cached per user in process for 6 h) | Active in production (verified 2026-10-16) |
+| NVIDIA Nemotron 3 Ultra 550B-A55B, Llama-3.1-Nemotron-Ultra-253B (Nebius) | Configured for difficult verification | Never selected by `routing-0.1.0`: its benefit has not been measured | Configured, not used |
+| **Tavily** | Web search for external sources | Only when the corpus evidence is insufficient, for setting, score or open passage questions | Active in production (verified 2026-10-16) |
+| Laya (`laya-serve`) | Advisory decision hints, traced beside the rules' choice | Shadow mode only | Disabled in the public deployment (Free-plan limits) |
+
+### How a model is chosen, checked and recorded
+
+- **Routing.** Every generative call builds a validated routing context (task type, complexity, input size, verification
+  need, latency budget, privacy scope, retry count) and the deterministic policy `routing-0.1.0`
+  (`services/model_gateway/router.py`) returns the route, the model, the reason and the fallback. Nothing a user sends
+  can name a model.
+- **Cheapest suitable model first.** Nano handles reranking, routine synthesis and extraction; Super is used where it has
+  been measured to help: comparison questions, and full-text extraction, where Nano returned values without verbatim
+  spans (every one rejected by validation in a 2026-10-14 check). A long prompt alone never escalates. Reasoning is
+  switched off on the routine routes: in a 2026-10-01 probe this cut one extraction from 14.8 s and 1,251 output tokens to
+  2.9 s and 295 tokens with a complete, quote-grounded answer. On the small routing benchmark (36 questions × 4 modes,
+  `data/reports/routing_bench_v0.2.0.md`), dynamic routing answered 9 of 12 field questions exactly (fixed models: 8 of
+  12) with no wrong field answer in any mode.
+- **Fallbacks and last resorts.** When an output fails validation, the other tier is tried once if the latency budget
+  allows; otherwise a deterministic last resort applies: the fused retrieval order is kept (reranking), the strongest
+  passages are quoted verbatim and marked as such (synthesis), or the fields stay unknown (extraction). A model never
+  overrides an abstention.
+- **Validation before anything is shown.** Outputs are parsed against the requested JSON schema and validated again in
+  code (`services/model_gateway/structured.py`). Then the evidence checks run: a claim survives only if its quote appears
+  verbatim in the cited source and contains the claim's numbers, and an extracted value only if its span holds the value
+  under matching evaluation conditions.
+- **Recorded in the Research Trace.** Each model call stores its routing decision (selected route and model, reason,
+  fallback route and model, every attempt with status, latency and tokens, privacy scope, policy version). The retrieval
+  stage records the embedding model, its latency and whether the embedding came from cache; the reranking stage records
+  the model and whether the grades were cached.
+
+### Tavily: External Research Discovery
+
+ResearchX always searches its own corpus first. Only when the reranked evidence is insufficient (no passage graded 3 and
+fewer than two graded 2+, or the question's rare terms missing from them) does the run record an evidence gap and look
+outside, and only with the providers suited to what is missing:
+
+| Missing evidence | Providers asked |
+|---|---|
+| A setting value (learning rate, batch size, …) | Semantic Scholar, arXiv, **Tavily** |
+| A score | Semantic Scholar, arXiv, OpenAlex, **Tavily** |
+| An open passage question | Semantic Scholar, OpenAlex, arXiv, CORE, OpenReview, **Tavily** |
+| Literature coverage, named papers, critiques | Scholarly providers only (no Tavily) |
+
+- **The call.** Tavily receives the question as asked (the scholarly APIs receive keyword terms) and runs one basic
+  search for 5 results (1 credit). ResearchX asks for sources only (`include_answer: false`), never a generated answer.
+- **Budgets.** All providers run in parallel: 8 s per request (3 s to connect), 9 s for the whole external phase, and once
+  one provider has answered the others get at most 2.5 s more. A rate-limited request (HTTP 429) is retried once after
+  1 s. Provider results are cached per user for 24 h, written only while the database is under its 450 MB guard.
+- **Validation and provenance.** Every result passes a deterministic source gate (`services/runtime/tools.py`): HTTPS
+  only, no instruction-like text (an injection-like title is never echoed), no duplicate URL, DOI or arXiv id (the other
+  providers that found the same work are recorded instead), and enough content. Accepted results keep their provider,
+  URL, retrieval time, content hash and a reliability tier (scholarly, technical, web), and are recorded in
+  `rx.runtime_sources` without any link to the user who searched. Rejected results are not stored.
+- **Four different things.** *Discovery* is a search result. It becomes *evidence* only after passing the gate and being
+  selected (at most 4 external sources per answer). It becomes a *citation* only when a claim quoting it passes the
+  verbatim-quote check. It becomes part of the *permanent corpus* only through an explicit, reviewed promotion
+  (proposal → `CANDIDATE` → reviewed release, which is not automated yet); external search never writes to the corpus.
+- **Degraded mode.** Without `TAVILY_API_KEY` Tavily is skipped; a timeout or error is traced as failed or cut off; either
+  way the other providers still answer within the phase, and with no usable external evidence the run answers from the
+  corpus or abstains. Every provider's status, result count and error is in the run's trace.
+
+### Request flow
+
+```mermaid
+flowchart TD
+    Q["Research question"] --> C{"Answer cached<br/>for this user?"}
+    C -- "hit" --> OUT["Answer with citations<br/>+ Research Trace"]
+    C -- "miss" --> H["Internal hybrid retrieval<br/>BM25 + pgvector<br/>(Qwen3-Embedding-8B via Nebius)"]
+    H --> RR["Rerank top 20<br/>(Nemotron Nano via Nebius)"]
+    RR --> S{"Evidence<br/>sufficient?"}
+    S -- "yes" --> SEL["Evidence selection<br/>+ recorded contradictions"]
+    S -- "no: evidence gap" --> X["External discovery by need<br/>scholarly APIs, Tavily for some gaps"]
+    X --> G["Source gate<br/>HTTPS, no instruction-like text,<br/>dedup, min content, provenance"]
+    G --> SEL
+    SEL --> RT{"Routing policy<br/>routing-0.1.0"}
+    RT -- "routine" --> N["Nemotron Nano via Nebius<br/>synthesis or field extraction"]
+    RT -- "comparison or full text" --> SU["Nemotron Super via Nebius"]
+    N --> V["Deterministic validation<br/>verbatim quotes, numbers, conditions"]
+    SU --> V
+    V --> ST["ANSWERED, PARTIAL,<br/>CONFLICTING or ABSTAINED"]
+    ST --> OUT
+```
+
+Not every request calls every model: an answer-cache hit calls none, external discovery runs only on an evidence gap,
+and Super is used only for comparisons, full-text reading or a validated fallback.
+
+### Configuration
+
+| Variable | Purpose |
+|---|---|
+| `NEBIUS_API_KEY` | Nebius Token Factory (all generation and embeddings). Required for model calls |
+| `TAVILY_API_KEY` | Tavily web search. Optional: without it Tavily is skipped |
+| `OPENALEX_API_KEY` | OpenAlex with its own quota. Optional, but keyless requests from shared hosting IPs are often rate-limited |
+| `RESEARCHX_CONTACT_EMAIL` | Contact address sent to OpenAlex as `mailto`. Optional |
+| `S2_API_KEY`, `CORE_API_KEY`, `UNPAYWALL_EMAIL` | Other evidence providers. Optional |
+
+Model routes live in `config/models.yaml`; provider routing, timeouts and cache settings in `config/runtime.yaml`.
+Locally, copy `.env.example` to `.env` (git-ignored) and fill in values. On Render, add the same names as secret
+environment variables in the service's *Environment* settings (or run
+`scripts/deploy/render_service.py set-env <NAME> <value>`) and redeploy. `GET /api/health` reports which providers
+are configured (`nebius_models`, `tavily`, `semantic_scholar_key`) as true or false, never their values.
+
+| Symptom | Likely cause and fix |
+|---|---|
+| Model stages fail with 401/403, or `/api/health` shows `nebius_models: false` | `NEBIUS_API_KEY` missing or invalid: set it and redeploy. Runs still finish, degraded (BM25 only, fused order, quoted passages) |
+| A model route reports a model as unavailable | The configured name is not in the account's catalog: compare the candidates in `config/models.yaml` with `GET /models` |
+| A route is skipped after repeated errors | The health circuit opened after three failures within five minutes; it closes when the window passes |
+| Tavily traced as failed or cut off | Timeout, exhausted credits or a missing key; check the key and credits. The other providers still answer |
+| OpenAlex returns HTTP 429 | Keyless requests share the host's IP allowance: set `OPENALEX_API_KEY` (and `RESEARCHX_CONTACT_EMAIL`) |
+| A provider is traced as skipped | Its key is not set in that environment |
+| The trace shows `fallback_used: true` or an extractive answer | The first model's output failed validation or the route was unavailable; the trace records each attempt and the reason |
+
+### Why this combination matters
+
+- **Nebius Token Factory is the inference layer:** one OpenAI-compatible endpoint serves every model ResearchX uses,
+  selected per task by configuration.
+- **NVIDIA Nemotron models do the research-specific language work** in their measured roles: Nano for high-volume
+  reranking, routine synthesis and extraction, Super for comparisons and long full-text reading.
+- **Tavily extends the search beyond the corpus** when the internal evidence falls short, behind the same source gate and
+  citation checks as everything else.
+- **ResearchX ties these together into one research workflow** (retrieval, evidence validation, model routing,
+  provenance, citations and abstention), every step recorded in the Research Trace, rather than a general-purpose chatbot.
+
 ## Architecture
 
 ResearchX has two halves. An **offline dataset pipeline** builds a frozen, validated corpus release from public
