@@ -1,8 +1,8 @@
-// Export docs/diagrams/*.drawio to PNG (2x) and SVG with the official draw.io viewer in headless Chromium, then check the
+// Export diagrams/*.drawio to PNG (2x) and SVG with the official draw.io viewer in headless Chromium, then check the
 // rendered layout at its real size: text that overflows its shape, connector labels that touch shapes, text or other
 // connectors, connectors that run through text, and anything closer than 16 px to the canvas edge. The SVG embeds the
 // Latin subsets of IBM Plex Sans / Mono and Source Serif 4, so it renders the same where web fonts cannot load.
-// Usage: node docs/diagrams/src/render.mjs [prefix ...]   (playwright-core: set PLAYWRIGHT_CORE to its path if it is not
+// Usage: node diagrams/src/render.mjs [prefix ...]   (playwright-core: set PLAYWRIGHT_CORE to its path if it is not
 // installed here; needs network access for the viewer script and the fonts). Exit code 2 when a file fails to render or
 // a check fails.
 import fs from "node:fs";

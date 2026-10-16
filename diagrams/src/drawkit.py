@@ -137,6 +137,15 @@ class Diagram:
         self._cell(cid, "".join(parts), style, x, y, w, h, kind=kind)
         return cid
 
+    def chip(self, cid, x, y, w, s, kind="service", h=30, size=11.5):
+        """A compact one-line box for an identifier (a script stage, a table) in IBM Plex Mono."""
+        fill, stroke, width, extra = NODE[kind]
+        style = (f"rounded=1;arcSize=6;absoluteArcSize=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=6;"
+                 f"{font(MONO)}fontSize={size};fontColor={INK};fillColor={fill};strokeColor={stroke};strokeWidth={width};"
+                 + extra.replace("size=9", "size=5"))
+        self._cell(cid, esc(s), style, x, y, w, h, kind=kind)
+        return cid
+
     def decision(self, cid, x, y, w, h, s, size=12.5):
         style = (f"rhombus;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;{font(SANS)}fontSize={size};fontColor={INK};"
                  f"fontStyle=1;fillColor={SURFACE};strokeColor={INK};strokeWidth=1.25;spacing=14;")
@@ -299,7 +308,7 @@ class Diagram:
         return problems
 
     def save(self, out_dir: Path) -> tuple[Path, list[str]]:
-        xml = (f'<mxfile host="ResearchX docs/diagrams/src/build.py" type="device"><diagram id="{self.slug}" name="{esc(self.title)}">'
+        xml = (f'<mxfile host="ResearchX diagrams/src/build.py" type="device"><diagram id="{self.slug}" name="{esc(self.title)}">'
                f'<mxGraphModel dx="{self.width}" dy="{self.height}" grid="1" gridSize="4" guides="1" tooltips="1" connect="1" arrows="1" '
                f'fold="1" page="1" pageScale="1" pageWidth="{self.width}" pageHeight="{self.height}" background="{PAPER}" math="0" shadow="0">'
                f'<root><mxCell id="0"/><mxCell id="1" parent="0"/>{"".join(self.cells)}</root></mxGraphModel></diagram></mxfile>')

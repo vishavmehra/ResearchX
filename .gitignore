@@ -19,10 +19,9 @@ __pycache__/
 !.env.example
 
 # Data stays local: raw and full-text sources, releases, silver records, indexes and run artifacts are large or
-# license-restricted (spec §31, §32). Only the README, the JSON schemas and the evaluation reports cited in the
-# project README are published. The BM25 artifact is rebuilt from the database by scripts/retrieval/build_bm25.py.
+# license-restricted (spec §31, §32). Only the JSON schemas and the evaluation reports cited in the project README are
+# published. The BM25 artifact is rebuilt from the database by scripts/retrieval/build_bm25.py.
 data/*
-!data/README.md
 !data/schemas/
 !data/reports/
 data/reports/*
@@ -37,8 +36,8 @@ data/reports/*
 !data/reports/cache_bench_v0.2.0.md
 !data/reports/cache_bench_v0.2.0.json
 
-# Internal working material: agent instructions, plans, demo preparation, audit reports and local tool state. These
-# stay on the developer's machine and are not part of the public repository.
+# Internal working material: agent instructions, plans, design and specification documents, demo preparation, audit
+# reports and local tool state. These stay on the developer's machine and are not part of the public repository.
 CLAUDE.md
 AGENTS.md
 .claude/
@@ -46,12 +45,7 @@ AGENTS.md
 .remember/
 .planning/
 planning/
-docs/demo/
-docs/RESEARCHX_FINAL_READINESS_REPORT.md
-docs/CAPABILITY_ARCHITECTURE.md
-docs/DATASET_DEEPENING.md
-docs/DATASET_SOURCE_MAP.md
-docs/MANUAL_DOWNLOADS.md
+docs/
 
 # third-party repositories cloned for inspection
 external/

@@ -1,5 +1,5 @@
-"""The ResearchX diagram set (docs/diagrams/*.drawio). Run: python docs/diagrams/src/build.py [slug ...]
-then node docs/diagrams/src/render.mjs to export PNG and SVG with the draw.io viewer and check the rendered layout.
+"""The ResearchX diagram set (diagrams/*.drawio). Run: python diagrams/src/build.py [slug ...]
+then node diagrams/src/render.mjs to export PNG and SVG with the draw.io viewer and check the rendered layout.
 
 Content follows the implementation (services/, apps/web, config/, supabase/migrations); anything not built or not verified
 is labelled as such. Geometry is hand-placed on a 4 px grid and every connector has explicit waypoints, so the files can
@@ -528,23 +528,22 @@ def analyses():
 @diagram
 def deployment():
     d = Diagram("11-deployment", "Deployment",
-                "One public web address; the API, Supabase and the model and evidence providers sit behind it. Status as of 2026-10-16.",
+                "One public web address: the web app on Vercel forwards /api/* to the API on Render, which reaches Supabase and the providers.",
                 W, 720)
     d.zone(32, 112, 264, 384, "BROWSER")
     d.zone(328, 112, 336, 384, "VERCEL")
-    d.zone(696, 112, 336, 384, "BACKEND HOST")
+    d.zone(696, 112, 336, 384, "RENDER · SINGAPORE")
     d.zone(1064, 112, 264, 384, "MANAGED SERVICES")
     d.node("user", 56, 200, 216, 104, "Researcher or judge", "Opens one public URL")
     d.node("web", 352, 176, 288, 176, "Public web app",
            "Serves the UI and rewrites /api/* on the server to RESEARCHX_API_ORIGIN, so the browser talks to one origin",
            tag="NEXT.JS 16 · apps/web", kind="focal")
-    d.badge(364, 318, "NOT YET DEPLOYED", "muted")
     d.node("api", 720, 176, 288, 176, "ResearchX API",
-           "Same code as local · RESEARCHX_LAYA=0, Laya is not deployed · secrets only in the host's environment", tag="FASTAPI · services/api")
-    d.badge(732, 318, "NOT YET DEPLOYED", "muted")
+           "Built from render.yaml; the BM25 index is rebuilt from the database at build time · Laya is not deployed (RESEARCHX_LAYA=0) "
+           "· secrets only in Render's environment", tag="FASTAPI · services/api")
     d.node("nebius", 1088, 144, 216, 80, "Nebius Token Factory", "NVIDIA Nemotron · Qwen3 embeddings", kind="external")
     d.node("prov", 1088, 256, 216, 80, "Evidence providers", "Semantic Scholar, OpenAlex, arXiv, …", kind="external")
-    d.node("supa", 1088, 368, 216, 104, "Supabase", "Postgres (rx, pgvector, RLS) · Auth · Storage", kind="store")
+    d.node("supa", 1088, 368, 216, 104, "Supabase", "Postgres (rx, pgvector, RLS) · Auth · Storage · Tokyo", kind="store")
     d.edge("user", "web", (1, 0.5), (0, (252 - 176) / 176), kind="accent", label="HTTPS", pos=(312, 252))
     d.edge("web", "api", (1, 0.5), (0, 0.5), kind="accent", label="/api/*", pos=(680, 264))
     d.edge("api", "nebius", (1, (184 - 176) / 176), (0, 0.5))
@@ -591,6 +590,108 @@ def demo():
     for k in range(4, 7):
         d.edge(f"j{k}", f"j{k + 1}", (0, 0.5), (1, 0.5), kind="accent")
     d.legend(600, [("focal", "Core moment"), ("service", "Step"), ("arrow:accent", "Demo order")])
+    return d
+
+
+# ------------------------------------------------------------------------------------------------ 13
+@diagram
+def dataset_pipeline():
+    d = Diagram("13-dataset-pipeline", "Dataset pipeline: from public sources to the served corpus",
+                "Offline and reproducible (scripts/data/run_pipeline.py). Every acquisition stage is cached and resumable; a failed "
+                "validation stops the build.", W, 1000)
+    row1 = [("z_src", 32, 200, "PUBLIC SOURCES", "external",
+             ["OpenAlex", "arXiv OAI-PMH", "Semantic Scholar", "arXiv API", "Papers with Code", "arXiv HTML / PDF", "GitHub"]),
+            ("z_disc", 264, 240, "1 · DISCOVER", "service",
+             ["acquire_openalex", "acquire_arxiv_oai", "build_discovery_corpus", "normalize_metadata", "deduplicate_papers"]),
+            ("z_enr", 536, 240, "2 · ENRICH AND FILTER", "service",
+             ["acquire_semantic_scholar", "acquire_arxiv", "acquire_papers_with_code", "normalize_metadata", "deduplicate_papers",
+              "filter_mlcs"]),
+            ("z_full", 808, 240, "3 · FULL TEXT", "service", ["acquire_fulltext", "parse_fulltext"]),
+            ("z_ext", 1080, 248, "4 · EXTRACT", "service",
+             ["extract_experiments", "extract_evidence", "extract_deep", "link_artifacts", "assess_depth"])]
+    row2 = [("z_rel", 1080, 248, "5 · RELATE", "service",
+             ["build_study_links", "build_comparison_candidates", "build_hard_negatives", "build_contradictions", "build_abstention_cases",
+              "build_knowledge_graph", "build_research_tasks"]),
+            ("z_val", 808, 240, "6 · REVIEW AND VALIDATE", "service",
+             ["build_review_queue", "record_review", "promote_gold", "validate_dataset", "detect_leakage", "check_licenses",
+              "generate_statistics", "build_manifest"]),
+            ("z_rls", 536, 240, "7 · RELEASE", "service", ["snapshot_release", "release 0.2.0 (frozen)", "manifests · licence report"]),
+            ("z_load", 264, 240, "8 · LOAD AND INDEX", "service", ["load_release", "embed_chunks", "load_embeddings", "build_bm25"]),
+            ("z_srv", 32, 200, "SERVED", "service", ["Supabase schema rx", "pgvector halfvec(256)", "BM25 artifact", "ResearchX API"])]
+    human = {"build_review_queue", "record_review"}
+    for (y, h), row in (((112, 344), row1), ((504, 368), row2)):
+        for cid, x, w, label, kind, chips in row:
+            d.zone(x, y, w, h, label, cid=cid)
+            for k, s in enumerate(chips):
+                ck = "info" if s in human else "focal" if s == "ResearchX API" else kind
+                d.chip(f"{cid}_{k}", x + 14, y + 44 + k * 38, w - 28, s, kind=ck)
+    for a, b in [("z_src", "z_disc"), ("z_disc", "z_enr"), ("z_enr", "z_full"), ("z_full", "z_ext")]:
+        d.edge(a, b, (1, 0.5), (0, 0.5), kind="accent")
+    d.edge("z_ext", "z_rel", (0.5, 1), (0.5, 0), kind="accent")
+    for a, b in [("z_rel", "z_val"), ("z_val", "z_rls"), ("z_rls", "z_load"), ("z_load", "z_srv")]:
+        d.edge(a, b, (0, 0.5), (1, 0.5), kind="accent")
+    d.note(822, 236, 212, 112, "Licence and redistribution are recorded per paper; full texts stay local and are never committed.", size=12.5)
+    d.note(550, 672, 212, 112, "The runtime serves the frozen release: its rows are loaded as they are, never edited in place.", size=12.5)
+    d.note(278, 708, 212, 150, "Embeddings: Qwen3-Embedding-8B cut to 256 dimensions; the loader stops before the database passes 450 MB.",
+           size=12.5)
+    d.note(40, 892, 1280, 40, "Stages run top to bottom within each group. Extraction combines deterministic rules with schema-bound Nemotron "
+                              "extraction, and every value keeps its evidence. The review loop (blue) is run by people, separately from the build.",
+           size=12.5)
+    d.legend(952, [("external", "Public source"), ("service", "Pipeline stage"), ("info", "Human review loop"), ("focal", "Runtime"),
+                   ("arrow:accent", "Data flow")])
+    return d
+
+
+# ------------------------------------------------------------------------------------------------ 14
+@diagram
+def data_model():
+    d = Diagram("14-data-model", "Data model: Supabase schema rx",
+                "Shared corpus tables read only by the backend, per-user tables under owner-only row-level security.", W, 896)
+    d.zone(32, 112, 632, 400, "CORPUS RELEASE · SHARED · BACKEND READS ONLY")
+    cols, rows = [48, 256, 464], [160 + r * 52 for r in range(5)]
+    grid = [["papers", "experiments", "results"], ["citations", "evidence", "provenance"], ["studies", "associations", "canonical_entities"],
+            ["source_records", "artifacts", "artifact_relations"], ["dataset_releases", "load_checks", "other_records"]]
+    for r, names in enumerate(grid):
+        for c, s in enumerate(names):
+            d.chip(f"t_{s}", cols[c], rows[r], 168, s)
+    d.edge("t_papers", "t_experiments", (1, 0.5), (0, 0.5))
+    d.edge("t_experiments", "t_results", (1, 0.5), (0, 0.5))
+    d.edge("t_papers", "t_citations", (0.5, 1), (0.5, 0))
+    d.edge("t_experiments", "t_evidence", (0.5, 1), (0.5, 0))
+    d.note(48, 432, 600, 60, "One frozen release (0.2.0). Every experiment field keeps its evidence and provenance.", size=12.5)
+    d.zone(696, 112, 304, 160, "RETRIEVAL")
+    d.chip("t_chunks", 712, 156, 272, "chunks")
+    d.chip("t_chunk_embeddings", 712, 208, 272, "chunk_embeddings · halfvec(256)")
+    d.edge("t_chunks", "t_chunk_embeddings", (0.5, 1), (0.5, 0))
+    d.zone(696, 304, 304, 208, "COMPARISON AND GRAPH")
+    for k, s in enumerate(["comparisons", "contradictions", "study_links", "graph_nodes", "graph_edges", "research_tasks", "hard_cases",
+                           "abstention_cases"]):
+        d.chip(f"t_{s}", 712 + (k % 2) * 144, 348 + (k // 2) * 40, 128, s)
+    d.zone(1032, 112, 296, 160, "EVALUATION")
+    d.chip("t_eval_runs", 1048, 156, 264, "eval_runs")
+    d.chip("t_eval_results", 1048, 208, 264, "eval_results")
+    d.edge("t_eval_runs", "t_eval_results", (0.5, 1), (0.5, 0))
+    d.zone(1032, 304, 296, 208, "PROMOTION")
+    d.chip("t_runtime_sources", 1048, 348, 264, "runtime_sources")
+    d.note(1048, 392, 264, 100, "External sources found by runs: RUNTIME, then CANDIDATE when proposed for review. No user linkage.",
+           size=12.5)
+    d.zone(32, 544, 1296, 216, "USER-OWNED · OWNER-ONLY ROW-LEVEL SECURITY")
+    r0, r1 = 588, 640
+    for s, x in [("profiles", 48), ("conversations", 256), ("messages", 464), ("research_runs", 672), ("run_events", 880),
+                 ("user_documents", 1088)]:
+        d.chip(f"t_{s}", x, r0, 168, s, kind="focal" if s == "research_runs" else "service")
+    for s, x in [("cache_entries", 48), ("retrieval_traces", 672), ("user_chunks", 1088)]:
+        d.chip(f"t_{s}", x, r1, 168, s)
+    d.edge("t_conversations", "t_messages", (1, 0.5), (0, 0.5))
+    d.edge("t_research_runs", "t_run_events", (1, 0.5), (0, 0.5))
+    d.edge("t_research_runs", "t_retrieval_traces", (0.5, 1), (0.5, 0))
+    d.edge("t_user_documents", "t_user_chunks", (0.5, 1), (0.5, 0))
+    d.note(48, 692, 1264, 48, "Every user-owned row carries user_id, and the API writes it as the signed-in user. Original files live in "
+                              "the Supabase Storage bucket user-documents, one folder per user. The runtime graph of a run is stored with the run.",
+           size=12.5)
+    d.note(40, 784, 1280, 40, "Row-level security is enabled on every table in rx. Corpus, retrieval, comparison, evaluation and promotion tables "
+                              "have no user policies, so only the backend's service connection reads them.", size=12.5)
+    d.legend(848, [("service", "Table"), ("focal", "One row per research run"), ("arrow:default", "Parent to child rows")])
     return d
 
 

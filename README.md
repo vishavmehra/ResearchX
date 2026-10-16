@@ -6,7 +6,7 @@ evidence is missing it says so instead of guessing, and when sources disagree it
 researchers compare papers, investigate discrepancies, rebuild experimental recipes and decide what to test next.
 
 <p align="center">
-  <img src="docs/diagrams/01-system-architecture.png" alt="ResearchX system architecture: Next.js web app, FastAPI gateway, research orchestrator, model router, eight analyses, Laya in shadow mode, Supabase Postgres and Storage, Nebius-hosted NVIDIA models and scholarly evidence providers" width="100%">
+  <img src="diagrams/01-system-architecture.png" alt="ResearchX system architecture: Next.js web app, FastAPI gateway, research orchestrator, model router, eight analyses, Laya in shadow mode, Supabase Postgres and Storage, Nebius-hosted NVIDIA models and scholarly evidence providers" width="100%">
 </p>
 
 ## Try it
@@ -29,7 +29,7 @@ A good first question: *"What learning rate and batch size were used to train HR
 **Research Trace** and **Knowledge Map** on the answer. The suggested path through the product:
 
 <p align="center">
-  <img src="docs/diagrams/12-judge-demo-journey.png" alt="Judge demo journey: sign in, ask the flagship question, open the Research Trace and the Knowledge Map, compare papers, ask again for a cache hit, run the other analyses, see an abstention" width="100%">
+  <img src="diagrams/12-judge-demo-journey.png" alt="Judge demo journey: sign in, ask the flagship question, open the Research Trace and the Knowledge Map, compare papers, ask again for a cache hit, run the other analyses, see an abstention" width="100%">
 </p>
 
 ## What it does
@@ -45,6 +45,64 @@ A good first question: *"What learning rate and batch size were used to train HR
 - **Knowledge Map.** The shared, reviewed corpus graph beside the per-run runtime graph, with provenance on every node
   and edge. External sources can be proposed for review; private documents never can.
 - **Private library.** Each user's uploaded documents are searched only for that user, under row-level security.
+
+## Architecture
+
+ResearchX has two halves. An **offline dataset pipeline** builds a frozen, validated corpus release from public
+scholarly sources; the **online system** answers questions over that release, reaching outside it only when the corpus
+evidence is insufficient.
+
+**Request path.** The browser talks only to the Next.js app. Every page sits behind an auth gate (`apps/web/proxy.ts`
+validates the Supabase session on each load), and `/api/*` is rewritten on the server to the FastAPI backend, so no
+backend origin, database URL or provider key ever reaches the browser. The API verifies the bearer token with Supabase
+Auth, applies per-user rate limits and hands a question to the research orchestrator, which streams each stage back
+over server-sent events while it runs. Analyses go through the same API to `services/analysis`. Every generative model
+call goes through the model gateway and its routing policy, and every statement on user data runs as the user under
+PostgreSQL row-level security.
+
+**Deterministic where it can be.** Models are used for what needs language understanding: reranking, synthesis and
+extraction. Deciding what counts as evidence, whether a quote supports a claim, whether two experiments are comparable,
+which model to call and whether to abstain is plain code, versioned and traced.
+
+| Part | Responsibility |
+|---|---|
+| `apps/web` | Next.js 16 app: research chat, Knowledge Map (Cytoscape.js), Analyze, private library, settings; auth gate in `proxy.ts`; `/api/*` rewrite and Content-Security-Policy in `next.config.ts` |
+| `services/api` | FastAPI app: authentication, rate limits, research runs (JSON or SSE), conversations, documents, Knowledge Map, analyses, metrics |
+| `services/auth` | Bearer-token verification with Supabase Auth (accepted for at most 30 s) and the claims used to run SQL as the user |
+| `services/runtime` | Research orchestrator, external providers and the source gate, arXiv full-text reader, private documents, in-process caches, Research Trace |
+| `services/retrieval` | BM25, hybrid fusion (RRF) and LLM reranking; scholarly source clients; the retrieval scope that keeps private documents per user |
+| `services/evidence` | Field-level grounding: request parsing, verbatim-span checks, normalisation of evaluation conditions |
+| `services/model_gateway` | Nebius client with model-catalog resolution, retries and a health circuit; routing policy `routing-0.1.0`; schema validation of model outputs |
+| `services/analysis` | The eight analyses, field facts, configuration identity, request-time full-text reading, runtime papers |
+| `services/comparison` | Field-by-field comparison engine, conflicts, comparison candidates, study links |
+| `services/graph` | Canonical Knowledge Map and the per-run runtime graph |
+| `services/canonicalization` | Normalisation of titles, DOIs, arXiv ids and entity names; canonical entity ids |
+| `services/extraction`, `services/datasets` | Dataset pipeline: parsing, rule-based and model-based experiment extraction, schemas, validation, releases |
+| `services/laya` | Client of the Laya decision service (shadow mode) |
+| `services/storage` | PostgreSQL connections |
+| `config/` | `runtime.yaml` (retrieval, evidence, caches, budgets, Laya), `models.yaml` (model routes), `pipeline.yaml` and `domain.yaml` (dataset pipeline) |
+| `supabase/migrations` | Schema `rx`, row-level-security policies, trace-step whitelist, private storage bucket |
+| `scripts/` | Dataset pipeline, database loading, embeddings and BM25 build, evaluations, local start script |
+
+### Data model
+
+Everything lives in one Supabase project. Corpus tables are shared and read only by the backend; user-owned tables carry
+owner-only row-level-security policies; original uploaded files sit in a private Storage bucket.
+
+<p align="center">
+  <img src="diagrams/14-data-model.png" alt="Data model of schema rx: corpus release, retrieval, comparison and graph, evaluation, promotion and user-owned tables" width="100%">
+</p>
+
+### Dataset pipeline
+
+The corpus is built offline by `scripts/data/run_pipeline.py`: discovery from OpenAlex and arXiv, enrichment from
+Semantic Scholar, arXiv and Papers with Code, full-text parsing, experiment and evidence extraction, comparison and
+contradiction building, validation, leakage and licence checks, and a frozen release that is loaded into Supabase,
+embedded and indexed.
+
+<p align="center">
+  <img src="diagrams/13-dataset-pipeline.png" alt="Dataset pipeline from public sources through discovery, enrichment, full text, extraction, relations, review and validation, release, and loading into the served corpus" width="100%">
+</p>
 
 ## How a question is answered
 
@@ -71,13 +129,13 @@ flowchart LR
 Each step below is a row in the Research Trace:
 
 <p align="center">
-  <img src="docs/diagrams/02-research-lifecycle.png" alt="Lifecycle of a research question across the web app, API, orchestrator, Laya, Supabase, Nebius and evidence providers" width="100%">
+  <img src="diagrams/02-research-lifecycle.png" alt="Lifecycle of a research question across the web app, API, orchestrator, Laya, Supabase, Nebius and evidence providers" width="100%">
 </p>
 
 ## Citations, provenance, conflicts and abstention
 
 <p align="center">
-  <img src="docs/diagrams/03-retrieval-evidence-abstention.png" alt="Retrieval, evidence validation and abstention: hybrid retrieval, reranking, sufficiency check, external search with a source gate, field grounding or passage synthesis, deterministic validation and the four run statuses" width="100%">
+  <img src="diagrams/03-retrieval-evidence-abstention.png" alt="Retrieval, evidence validation and abstention: hybrid retrieval, reranking, sufficiency check, external search with a source gate, field grounding or passage synthesis, deterministic validation and the four run statuses" width="100%">
 </p>
 
 - A claim survives only if its quote appears verbatim in the source it cites and contains the claim's numbers
@@ -86,6 +144,7 @@ Each step below is a row in the Research Trace:
   or `UNKNOWN`. Unknown fields stay unknown; nothing is filled from defaults or similarity.
 - Training settings keep their stage (pre-training, fine-tuning, evaluation): a pre-training learning rate is never
   compared with a fine-tuning one.
+- External text passes a source gate before use: HTTPS only, instruction-like text rejected, duplicates dropped.
 - Model routing never overrides an abstention, and Laya never decides what evidence exists.
 
 ## The eight analyses
@@ -106,7 +165,7 @@ Diff and Benchmark Reality Explorer can also read papers outside the corpus at r
 abstract); those records are marked runtime and unreviewed, and nothing is written to the corpus.
 
 <p align="center">
-  <img src="docs/diagrams/10-eight-analyses.png" alt="The eight research analyses: entry points, the analysis API, the eight analyses, their shared foundation and the request-time runtime-paper pipeline" width="100%">
+  <img src="diagrams/10-eight-analyses.png" alt="The eight research analyses: entry points, the analysis API, the eight analyses, their shared foundation and the request-time runtime-paper pipeline" width="100%">
 </p>
 
 ## Knowledge Map: canonical and runtime graphs
@@ -116,7 +175,7 @@ evidence it used. Identity merges only on identifiers (DOI, arXiv id, corpus id,
 alone never merges nodes. Promoting an external source to the shared corpus is an explicit, reviewed step.
 
 <p align="center">
-  <img src="docs/diagrams/06-knowledge-graphs.png" alt="Canonical Knowledge Graph and per-run Runtime Graph with provenance, identity merging and the promotion path" width="100%">
+  <img src="diagrams/06-knowledge-graphs.png" alt="Canonical Knowledge Graph and per-run Runtime Graph with provenance, identity merging and the promotion path" width="100%">
 </p>
 
 ## Model routing on NVIDIA models
@@ -126,7 +185,7 @@ the cheapest suitable NVIDIA model first, escalation only for comparison questio
 and at most one validated fallback within the latency budget. Model choice is configuration (`config/models.yaml`).
 
 <p align="center">
-  <img src="docs/diagrams/04-model-routing.png" alt="Dynamic model routing and fallback with the route table per task" width="100%">
+  <img src="diagrams/04-model-routing.png" alt="Dynamic model routing and fallback with the route table per task" width="100%">
 </p>
 
 ## Laya: advisory only
@@ -136,7 +195,7 @@ traced next to the deterministic rules' choice and never applied; the orchestrat
 of the public deployment.
 
 <p align="center">
-  <img src="docs/diagrams/05-laya-shadow-mode.png" alt="Laya in shadow mode beside the authoritative orchestrator" width="100%">
+  <img src="diagrams/05-laya-shadow-mode.png" alt="Laya in shadow mode beside the authoritative orchestrator" width="100%">
 </p>
 
 ## Caching
@@ -146,13 +205,13 @@ query embeddings and reranker grades in process. A hit skips real work; abstenti
 writes stop when the database reaches 450 MB.
 
 <p align="center">
-  <img src="docs/diagrams/07-cache-architecture.png" alt="Cache architecture: answer cache, query-embedding cache, reranker-grade cache and external-provider cache with hit and miss paths" width="100%">
+  <img src="diagrams/07-cache-architecture.png" alt="Cache architecture: answer cache, query-embedding cache, reranker-grade cache and external-provider cache with hit and miss paths" width="100%">
 </p>
 
 ## Research Trace and observability
 
 <p align="center">
-  <img src="docs/diagrams/08-research-trace.png" alt="Research Trace: stages recorded by RunTracer, streamed live over server-sent events and stored per user" width="100%">
+  <img src="diagrams/08-research-trace.png" alt="Research Trace: stages recorded by RunTracer, streamed live over server-sent events and stored per user" width="100%">
 </p>
 
 ## Privacy, authentication and isolation
@@ -165,11 +224,12 @@ writes stop when the database reaches 450 MB.
 - Private passages may go only to model providers approved for private data (Nebius, the inference provider); they are
   never sent to evidence providers or to Laya, and private documents are never proposed to the shared graph.
 - Uploading or deleting a document empties that user's answer cache.
+- No credential is in the repository or the browser bundle; secrets live only in the hosts' environment settings.
 
 Google and GitHub sign-in are configured; they were verified only up to the provider's consent screen.
 
 <p align="center">
-  <img src="docs/diagrams/09-auth-private-library.png" alt="Authentication, private library and isolation" width="100%">
+  <img src="diagrams/09-auth-private-library.png" alt="Authentication, private library and isolation" width="100%">
 </p>
 
 ## Technology
@@ -182,8 +242,7 @@ Google and GitHub sign-in are configured; they were verified only up to the prov
 | Models | Nebius Token Factory: NVIDIA Nemotron 3 Nano 30B-A3B (reranking, synthesis, extraction), Nemotron 3 Super 120B-A12B (comparisons, full-text extraction), Qwen3-Embedding-8B (embeddings) |
 | Evidence providers | Semantic Scholar, OpenAlex, arXiv, CORE, OpenReview, Tavily (called only when the corpus evidence is insufficient) |
 | Decision layer | Laya (`laya-serve`, separate process): advisory, shadow mode by default |
-
-Runtime parameters (retrieval depths, budgets, cache lifetimes) are in `config/runtime.yaml`.
+| Hosting | Vercel (web app), Render (API), Supabase (database, auth, storage) |
 
 ## Run it locally
 
@@ -267,7 +326,7 @@ FastAPI backend on **Render**, which talks to Supabase, Nebius and the evidence 
 (`RESEARCHX_LAYA=0`).
 
 <p align="center">
-  <img src="docs/diagrams/11-deployment.png" alt="Deployment: browser, Vercel web app, backend host, managed services" width="100%">
+  <img src="diagrams/11-deployment.png" alt="Deployment: browser, Vercel web app, Render API, managed services" width="100%">
 </p>
 
 1. **Backend (Render).** Create a Web Service from this repository (or apply `render.yaml` as a Blueprint):
@@ -279,48 +338,9 @@ FastAPI backend on **Render**, which talks to Supabase, Nebius and the evidence 
 3. **Supabase Auth.** Add the Vercel URL to *Authentication → URL Configuration* (site URL and redirect URLs), and to the
    Google and GitHub provider settings if those are used.
 
-Status: see the live demo link at the top; it is added only after the deployment has been checked end to end.
+The diagrams are draw.io files in [`diagrams/`](diagrams), generated by `diagrams/src/build.py` and exported with
+`diagrams/src/render.mjs`; open any `.drawio` file in [draw.io](https://app.diagrams.net) to edit it.
 
-## Diagrams
+## License
 
-All twelve diagrams are draw.io files you can open and edit in [draw.io](https://app.diagrams.net). They are generated
-by [`docs/diagrams/src/build.py`](docs/diagrams/src/build.py) and exported to PNG and SVG by
-[`docs/diagrams/src/render.mjs`](docs/diagrams/src/render.mjs), which also checks the rendered layout for overflowing text
-and colliding labels.
-
-| # | Diagram | PNG | SVG | Source |
-|---|---|---|---|---|
-| 1 | System architecture | [png](docs/diagrams/01-system-architecture.png) | [svg](docs/diagrams/01-system-architecture.svg) | [drawio](docs/diagrams/01-system-architecture.drawio) |
-| 2 | Lifecycle of a research question | [png](docs/diagrams/02-research-lifecycle.png) | [svg](docs/diagrams/02-research-lifecycle.svg) | [drawio](docs/diagrams/02-research-lifecycle.drawio) |
-| 3 | Retrieval, evidence validation and abstention | [png](docs/diagrams/03-retrieval-evidence-abstention.png) | [svg](docs/diagrams/03-retrieval-evidence-abstention.svg) | [drawio](docs/diagrams/03-retrieval-evidence-abstention.drawio) |
-| 4 | Dynamic model routing and fallback | [png](docs/diagrams/04-model-routing.png) | [svg](docs/diagrams/04-model-routing.svg) | [drawio](docs/diagrams/04-model-routing.drawio) |
-| 5 | Laya: advisory decisions, orchestrator authority | [png](docs/diagrams/05-laya-shadow-mode.png) | [svg](docs/diagrams/05-laya-shadow-mode.svg) | [drawio](docs/diagrams/05-laya-shadow-mode.drawio) |
-| 6 | Canonical Knowledge Graph and per-run Runtime Graph | [png](docs/diagrams/06-knowledge-graphs.png) | [svg](docs/diagrams/06-knowledge-graphs.svg) | [drawio](docs/diagrams/06-knowledge-graphs.drawio) |
-| 7 | Cache architecture | [png](docs/diagrams/07-cache-architecture.png) | [svg](docs/diagrams/07-cache-architecture.svg) | [drawio](docs/diagrams/07-cache-architecture.drawio) |
-| 8 | Research Trace and observability | [png](docs/diagrams/08-research-trace.png) | [svg](docs/diagrams/08-research-trace.svg) | [drawio](docs/diagrams/08-research-trace.drawio) |
-| 9 | Authentication, private library and isolation | [png](docs/diagrams/09-auth-private-library.png) | [svg](docs/diagrams/09-auth-private-library.svg) | [drawio](docs/diagrams/09-auth-private-library.drawio) |
-| 10 | The eight research analyses | [png](docs/diagrams/10-eight-analyses.png) | [svg](docs/diagrams/10-eight-analyses.svg) | [drawio](docs/diagrams/10-eight-analyses.drawio) |
-| 11 | Deployment | [png](docs/diagrams/11-deployment.png) | [svg](docs/diagrams/11-deployment.svg) | [drawio](docs/diagrams/11-deployment.drawio) |
-| 12 | Judge demo journey | [png](docs/diagrams/12-judge-demo-journey.png) | [svg](docs/diagrams/12-judge-demo-journey.svg) | [drawio](docs/diagrams/12-judge-demo-journey.drawio) |
-
-## Security
-
-- No credentials in the repository, the browser bundle, logs or traces; `.env` is git-ignored and `.env.example` holds
-  descriptions only. If a credential is ever exposed, rotate it.
-- Token verification by Supabase Auth on every request, row-level security on all user data, per-user rate limits,
-  a strict Content-Security-Policy and `frame-ancestors 'none'` on the web app.
-- External text is gated before use: HTTPS only, instruction-like text rejected, duplicates dropped.
-- More detail: [`docs/SECURITY.md`](docs/SECURITY.md), [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md),
-  [`docs/API_SPEC.md`](docs/API_SPEC.md).
-
-## Contributing
-
-Issues and pull requests are welcome. Before opening one:
-
-- run `uv run pytest` (integration tests that need a database run only with `RX_INTEGRATION=1`) and
-  `npm run typecheck` in `apps/web`;
-- keep the evidence rules: never invent evidence, citations or values, keep unknown fields unknown, and validate every
-  structured model output;
-- update the relevant document under `docs/` when behaviour or architecture changes.
-
-No open-source licence has been chosen yet.
+ResearchX is released under the [MIT License](LICENSE).
