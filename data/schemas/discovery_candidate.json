@@ -1,0 +1,346 @@
+{
+  "$defs": {
+    "Provenance": {
+      "additionalProperties": false,
+      "description": "Spec \u00a730 minimum provenance fields.",
+      "properties": {
+        "annotator_status": {
+          "$ref": "#/$defs/ReviewerStatus",
+          "default": "UNREVIEWED"
+        },
+        "content_hash": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Content Hash"
+        },
+        "extractor_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Extractor Version"
+        },
+        "parent_record_ids": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Parent Record Ids",
+          "type": "array"
+        },
+        "processing_version": {
+          "title": "Processing Version",
+          "type": "string"
+        },
+        "raw_path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Raw Path"
+        },
+        "retrieved_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Retrieved At"
+        },
+        "source_identifier": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Identifier"
+        },
+        "source_name": {
+          "title": "Source Name",
+          "type": "string"
+        },
+        "source_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Url"
+        },
+        "source_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Version"
+        }
+      },
+      "required": [
+        "source_name",
+        "processing_version"
+      ],
+      "title": "Provenance",
+      "type": "object"
+    },
+    "QualityTier": {
+      "enum": [
+        "GOLD",
+        "SILVER",
+        "BRONZE"
+      ],
+      "title": "QualityTier",
+      "type": "string"
+    },
+    "ReviewerStatus": {
+      "enum": [
+        "UNREVIEWED",
+        "IN_REVIEW",
+        "REVIEWED",
+        "ADJUDICATED",
+        "DISPUTED"
+      ],
+      "title": "ReviewerStatus",
+      "type": "string"
+    }
+  },
+  "$id": "researchx://schemas/0.2.0/discovery_candidate.json",
+  "additionalProperties": false,
+  "description": "Layer 0 discovery corpus row (compact; full metadata stays in the raw OAI cache).",
+  "properties": {
+    "areas": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Areas",
+      "type": "array"
+    },
+    "arxiv_id": {
+      "title": "Arxiv Id",
+      "type": "string"
+    },
+    "candidate_id": {
+      "title": "Candidate Id",
+      "type": "string"
+    },
+    "categories": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Categories",
+      "type": "array"
+    },
+    "code_urls": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Code Urls",
+      "type": "array"
+    },
+    "experiment_signals": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Experiment Signals",
+      "type": "array"
+    },
+    "in_v010_corpus": {
+      "default": false,
+      "title": "In V010 Corpus",
+      "type": "boolean"
+    },
+    "journal_ref": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Journal Ref"
+    },
+    "latest_version": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Latest Version"
+    },
+    "license_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "License Id"
+    },
+    "license_url": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "License Url"
+    },
+    "matched_terms": {
+      "additionalProperties": {
+        "items": {
+          "type": "string"
+        },
+        "type": "array"
+      },
+      "default": {},
+      "title": "Matched Terms",
+      "type": "object"
+    },
+    "n_versions": {
+      "default": 0,
+      "minimum": 0,
+      "title": "N Versions",
+      "type": "integer"
+    },
+    "primary_category": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Primary Category"
+    },
+    "priority_score": {
+      "title": "Priority Score",
+      "type": "number"
+    },
+    "promoted": {
+      "default": false,
+      "title": "Promoted",
+      "type": "boolean"
+    },
+    "provenance": {
+      "$ref": "#/$defs/Provenance"
+    },
+    "published_doi": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Published Doi"
+    },
+    "quality_tier": {
+      "$ref": "#/$defs/QualityTier",
+      "default": "BRONZE"
+    },
+    "record_type": {
+      "const": "discovery_candidate",
+      "default": "discovery_candidate",
+      "title": "Record Type",
+      "type": "string"
+    },
+    "score_components": {
+      "additionalProperties": {
+        "type": "number"
+      },
+      "default": {},
+      "title": "Score Components",
+      "type": "object"
+    },
+    "selection_version": {
+      "title": "Selection Version",
+      "type": "string"
+    },
+    "source_record_id": {
+      "title": "Source Record Id",
+      "type": "string"
+    },
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "v1_date": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "V1 Date"
+    }
+  },
+  "required": [
+    "provenance",
+    "candidate_id",
+    "arxiv_id",
+    "source_record_id",
+    "title",
+    "areas",
+    "priority_score",
+    "selection_version"
+  ],
+  "title": "DiscoveryCandidate",
+  "type": "object",
+  "x-schema-version": "0.2.0"
+}

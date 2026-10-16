@@ -1,0 +1,255 @@
+{
+  "$defs": {
+    "ArtifactRelation": {
+      "enum": [
+        "CLAIMED_IN_PAPER",
+        "PRESENT_IN_REPOSITORY",
+        "CONFIRMED_BY_BOTH",
+        "RELATED_BUT_UNCONFIRMED",
+        "CONFLICTING"
+      ],
+      "title": "ArtifactRelation",
+      "type": "string"
+    },
+    "Provenance": {
+      "additionalProperties": false,
+      "description": "Spec \u00a730 minimum provenance fields.",
+      "properties": {
+        "annotator_status": {
+          "$ref": "#/$defs/ReviewerStatus",
+          "default": "UNREVIEWED"
+        },
+        "content_hash": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Content Hash"
+        },
+        "extractor_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Extractor Version"
+        },
+        "parent_record_ids": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Parent Record Ids",
+          "type": "array"
+        },
+        "processing_version": {
+          "title": "Processing Version",
+          "type": "string"
+        },
+        "raw_path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Raw Path"
+        },
+        "retrieved_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Retrieved At"
+        },
+        "source_identifier": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Identifier"
+        },
+        "source_name": {
+          "title": "Source Name",
+          "type": "string"
+        },
+        "source_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Url"
+        },
+        "source_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Version"
+        }
+      },
+      "required": [
+        "source_name",
+        "processing_version"
+      ],
+      "title": "Provenance",
+      "type": "object"
+    },
+    "QualityTier": {
+      "enum": [
+        "GOLD",
+        "SILVER",
+        "BRONZE"
+      ],
+      "title": "QualityTier",
+      "type": "string"
+    },
+    "ReviewerStatus": {
+      "enum": [
+        "UNREVIEWED",
+        "IN_REVIEW",
+        "REVIEWED",
+        "ADJUDICATED",
+        "DISPUTED"
+      ],
+      "title": "ReviewerStatus",
+      "type": "string"
+    }
+  },
+  "$id": "researchx://schemas/0.2.0/artifact_evidence.json",
+  "additionalProperties": false,
+  "description": "Field-level relation between paper claims and artifact contents (deepening \u00a716).",
+  "properties": {
+    "artifact_evidence_id": {
+      "title": "Artifact Evidence Id",
+      "type": "string"
+    },
+    "artifact_evidence_ids": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Artifact Evidence Ids",
+      "type": "array"
+    },
+    "artifact_id": {
+      "title": "Artifact Id",
+      "type": "string"
+    },
+    "artifact_value": {
+      "default": null,
+      "title": "Artifact Value"
+    },
+    "experiment_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Experiment Id"
+    },
+    "field_name": {
+      "title": "Field Name",
+      "type": "string"
+    },
+    "method_version": {
+      "title": "Method Version",
+      "type": "string"
+    },
+    "paper_evidence_ids": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Paper Evidence Ids",
+      "type": "array"
+    },
+    "paper_id": {
+      "title": "Paper Id",
+      "type": "string"
+    },
+    "paper_value": {
+      "default": null,
+      "title": "Paper Value"
+    },
+    "provenance": {
+      "$ref": "#/$defs/Provenance"
+    },
+    "quality_tier": {
+      "$ref": "#/$defs/QualityTier",
+      "default": "SILVER"
+    },
+    "rationale": {
+      "title": "Rationale",
+      "type": "string"
+    },
+    "record_type": {
+      "const": "artifact_evidence",
+      "default": "artifact_evidence",
+      "title": "Record Type",
+      "type": "string"
+    },
+    "relation": {
+      "$ref": "#/$defs/ArtifactRelation"
+    },
+    "reviewer_status": {
+      "$ref": "#/$defs/ReviewerStatus",
+      "default": "UNREVIEWED"
+    },
+    "study_id": {
+      "title": "Study Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "provenance",
+    "artifact_evidence_id",
+    "artifact_id",
+    "paper_id",
+    "study_id",
+    "field_name",
+    "relation",
+    "rationale",
+    "method_version"
+  ],
+  "title": "ArtifactEvidence",
+  "type": "object",
+  "x-schema-version": "0.2.0"
+}

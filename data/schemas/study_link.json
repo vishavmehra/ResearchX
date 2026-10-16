@@ -1,0 +1,392 @@
+{
+  "$defs": {
+    "Provenance": {
+      "additionalProperties": false,
+      "description": "Spec \u00a730 minimum provenance fields.",
+      "properties": {
+        "annotator_status": {
+          "$ref": "#/$defs/ReviewerStatus",
+          "default": "UNREVIEWED"
+        },
+        "content_hash": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Content Hash"
+        },
+        "extractor_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Extractor Version"
+        },
+        "parent_record_ids": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Parent Record Ids",
+          "type": "array"
+        },
+        "processing_version": {
+          "title": "Processing Version",
+          "type": "string"
+        },
+        "raw_path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Raw Path"
+        },
+        "retrieved_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Retrieved At"
+        },
+        "source_identifier": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Identifier"
+        },
+        "source_name": {
+          "title": "Source Name",
+          "type": "string"
+        },
+        "source_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Url"
+        },
+        "source_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Version"
+        }
+      },
+      "required": [
+        "source_name",
+        "processing_version"
+      ],
+      "title": "Provenance",
+      "type": "object"
+    },
+    "QualityDimensions": {
+      "additionalProperties": false,
+      "description": "Scientific-quality dimensions beside the BRONZE/SILVER/GOLD tier (deepening \u00a729). Unset = not applicable.",
+      "properties": {
+        "artifact_verification_quality": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/QualityLevel"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "comparison_quality": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/QualityLevel"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "configuration_completeness": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/QualityLevel"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "evidence_quality": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/QualityLevel"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "experiment_attribution_quality": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/QualityLevel"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "quality_version": {
+          "title": "Quality Version",
+          "type": "string"
+        },
+        "study_identity_quality": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/QualityLevel"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "quality_version"
+      ],
+      "title": "QualityDimensions",
+      "type": "object"
+    },
+    "QualityLevel": {
+      "enum": [
+        "HUMAN_VERIFIED",
+        "HIGH",
+        "MEDIUM",
+        "LOW",
+        "NONE",
+        "UNKNOWN",
+        "CONFLICTING"
+      ],
+      "title": "QualityLevel",
+      "type": "string"
+    },
+    "QualityTier": {
+      "enum": [
+        "GOLD",
+        "SILVER",
+        "BRONZE"
+      ],
+      "title": "QualityTier",
+      "type": "string"
+    },
+    "ReviewerStatus": {
+      "enum": [
+        "UNREVIEWED",
+        "IN_REVIEW",
+        "REVIEWED",
+        "ADJUDICATED",
+        "DISPUTED"
+      ],
+      "title": "ReviewerStatus",
+      "type": "string"
+    },
+    "Split": {
+      "enum": [
+        "TRAIN",
+        "VALIDATION",
+        "TEST",
+        "GOLD_EVAL",
+        "SAFETY_EVAL",
+        "REGRESSION",
+        "TEMPORAL_TEST",
+        "CROSS_SPLIT",
+        "UNASSIGNED"
+      ],
+      "title": "Split",
+      "type": "string"
+    },
+    "StudyLinkLabel": {
+      "enum": [
+        "SAME_UNDERLYING_STUDY",
+        "SAME_STUDY_DIFFERENT_RECORD",
+        "FOLLOW_UP",
+        "EXTENSION",
+        "REPLICATION",
+        "RELATED_BUT_DISTINCT",
+        "UNRELATED",
+        "UNCERTAIN"
+      ],
+      "title": "StudyLinkLabel",
+      "type": "string"
+    }
+  },
+  "$id": "researchx://schemas/0.2.0/study_link.json",
+  "additionalProperties": false,
+  "description": "Spec \u00a714. Candidate generation is not Gold labeling.",
+  "properties": {
+    "candidate_methods": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Candidate Methods",
+      "type": "array"
+    },
+    "confidence": {
+      "anyOf": [
+        {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Confidence"
+    },
+    "construction_method": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Construction Method"
+    },
+    "evidence": {
+      "items": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "title": "Evidence",
+      "type": "array"
+    },
+    "features": {
+      "additionalProperties": {
+        "type": "number"
+      },
+      "default": {},
+      "title": "Features",
+      "type": "object"
+    },
+    "is_hard_negative": {
+      "default": false,
+      "title": "Is Hard Negative",
+      "type": "boolean"
+    },
+    "labeler_version": {
+      "title": "Labeler Version",
+      "type": "string"
+    },
+    "link_id": {
+      "title": "Link Id",
+      "type": "string"
+    },
+    "provenance": {
+      "$ref": "#/$defs/Provenance"
+    },
+    "quality": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/QualityDimensions"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "quality_tier": {
+      "$ref": "#/$defs/QualityTier",
+      "default": "SILVER"
+    },
+    "rationale": {
+      "title": "Rationale",
+      "type": "string"
+    },
+    "record_a": {
+      "title": "Record A",
+      "type": "string"
+    },
+    "record_b": {
+      "title": "Record B",
+      "type": "string"
+    },
+    "record_type": {
+      "const": "study_link",
+      "default": "study_link",
+      "title": "Record Type",
+      "type": "string"
+    },
+    "relationship": {
+      "$ref": "#/$defs/StudyLinkLabel"
+    },
+    "reviewer_status": {
+      "$ref": "#/$defs/ReviewerStatus",
+      "default": "UNREVIEWED"
+    },
+    "split": {
+      "$ref": "#/$defs/Split",
+      "default": "UNASSIGNED"
+    }
+  },
+  "required": [
+    "provenance",
+    "link_id",
+    "record_a",
+    "record_b",
+    "relationship",
+    "candidate_methods",
+    "evidence",
+    "rationale",
+    "labeler_version"
+  ],
+  "title": "StudyLink",
+  "type": "object",
+  "x-schema-version": "0.2.0"
+}

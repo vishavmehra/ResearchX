@@ -1,0 +1,331 @@
+{
+  "$defs": {
+    "ArtifactType": {
+      "enum": [
+        "CODE_REPOSITORY",
+        "README",
+        "CONFIG_FILE",
+        "SCRIPT",
+        "MODEL_CARD",
+        "MODEL_CONFIG",
+        "CHECKPOINT",
+        "DATASET_CARD",
+        "RUN_RECORD",
+        "LOG",
+        "BENCHMARK_SUBMISSION",
+        "SUPPLEMENTARY"
+      ],
+      "title": "ArtifactType",
+      "type": "string"
+    },
+    "Provenance": {
+      "additionalProperties": false,
+      "description": "Spec \u00a730 minimum provenance fields.",
+      "properties": {
+        "annotator_status": {
+          "$ref": "#/$defs/ReviewerStatus",
+          "default": "UNREVIEWED"
+        },
+        "content_hash": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Content Hash"
+        },
+        "extractor_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Extractor Version"
+        },
+        "parent_record_ids": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Parent Record Ids",
+          "type": "array"
+        },
+        "processing_version": {
+          "title": "Processing Version",
+          "type": "string"
+        },
+        "raw_path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Raw Path"
+        },
+        "retrieved_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Retrieved At"
+        },
+        "source_identifier": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Identifier"
+        },
+        "source_name": {
+          "title": "Source Name",
+          "type": "string"
+        },
+        "source_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Url"
+        },
+        "source_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Version"
+        }
+      },
+      "required": [
+        "source_name",
+        "processing_version"
+      ],
+      "title": "Provenance",
+      "type": "object"
+    },
+    "QualityTier": {
+      "enum": [
+        "GOLD",
+        "SILVER",
+        "BRONZE"
+      ],
+      "title": "QualityTier",
+      "type": "string"
+    },
+    "ReviewerStatus": {
+      "enum": [
+        "UNREVIEWED",
+        "IN_REVIEW",
+        "REVIEWED",
+        "ADJUDICATED",
+        "DISPUTED"
+      ],
+      "title": "ReviewerStatus",
+      "type": "string"
+    }
+  },
+  "$id": "researchx://schemas/0.2.0/artifact.json",
+  "additionalProperties": false,
+  "description": "A research artifact observed at a pinned version (repository commit, card revision, run).",
+  "properties": {
+    "artifact_id": {
+      "title": "Artifact Id",
+      "type": "string"
+    },
+    "artifact_type": {
+      "$ref": "#/$defs/ArtifactType"
+    },
+    "bytes": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Bytes"
+    },
+    "commit": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Commit"
+    },
+    "content_sha256": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Content Sha256"
+    },
+    "license": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "License"
+    },
+    "link_basis": {
+      "title": "Link Basis",
+      "type": "string"
+    },
+    "linked_paper_ids": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Linked Paper Ids",
+      "type": "array"
+    },
+    "official": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Official"
+    },
+    "parent_artifact_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Parent Artifact Id"
+    },
+    "path": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Path"
+    },
+    "provenance": {
+      "$ref": "#/$defs/Provenance"
+    },
+    "quality_tier": {
+      "$ref": "#/$defs/QualityTier",
+      "default": "BRONZE"
+    },
+    "raw_path": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Raw Path"
+    },
+    "record_type": {
+      "const": "artifact",
+      "default": "artifact",
+      "title": "Record Type",
+      "type": "string"
+    },
+    "repository": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Repository"
+    },
+    "retrieved_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Retrieved At"
+    },
+    "url": {
+      "title": "Url",
+      "type": "string"
+    }
+  },
+  "required": [
+    "provenance",
+    "artifact_id",
+    "artifact_type",
+    "url",
+    "link_basis"
+  ],
+  "title": "Artifact",
+  "type": "object",
+  "x-schema-version": "0.2.0"
+}

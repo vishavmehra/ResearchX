@@ -1,0 +1,220 @@
+{
+  "$defs": {
+    "FulltextFormat": {
+      "enum": [
+        "PDF",
+        "HTML",
+        "XML",
+        "TEI_XML",
+        "STRUCTURED_TEXT"
+      ],
+      "title": "FulltextFormat",
+      "type": "string"
+    },
+    "FulltextInfo": {
+      "additionalProperties": false,
+      "description": "Spec \u00a736 per-document full-text fields.",
+      "properties": {
+        "format": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FulltextFormat"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "full_text_available": {
+          "title": "Full Text Available",
+          "type": "boolean"
+        },
+        "full_text_source": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Full Text Source"
+        },
+        "license_status": {
+          "default": "UNKNOWN",
+          "enum": [
+            "PERMITTED",
+            "RESTRICTED",
+            "UNKNOWN"
+          ],
+          "title": "License Status",
+          "type": "string"
+        },
+        "parsed_path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Parsed Path"
+        },
+        "path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Path"
+        },
+        "retrieval_timestamp": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Retrieval Timestamp"
+        },
+        "retrieval_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Retrieval Url"
+        },
+        "sha256": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sha256"
+        }
+      },
+      "required": [
+        "full_text_available"
+      ],
+      "title": "FulltextInfo",
+      "type": "object"
+    },
+    "LicenseInfo": {
+      "additionalProperties": false,
+      "properties": {
+        "content_license": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Content License"
+        },
+        "license_source": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "License Source"
+        },
+        "metadata_license": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Metadata License"
+        },
+        "redistribution_allowed": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Redistribution Allowed"
+        },
+        "training_allowed": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Training Allowed"
+        }
+      },
+      "title": "LicenseInfo",
+      "type": "object"
+    }
+  },
+  "$id": "researchx://schemas/0.2.0/fulltext_index.json",
+  "additionalProperties": false,
+  "description": "One row of data/normalized/sources/fulltext_index.jsonl (what was fetched, licence, storage).",
+  "properties": {
+    "arxiv_id": {
+      "title": "Arxiv Id",
+      "type": "string"
+    },
+    "fulltext": {
+      "$ref": "#/$defs/FulltextInfo"
+    },
+    "license": {
+      "$ref": "#/$defs/LicenseInfo"
+    },
+    "record_type": {
+      "const": "fulltext_index",
+      "default": "fulltext_index",
+      "title": "Record Type",
+      "type": "string"
+    }
+  },
+  "required": [
+    "arxiv_id",
+    "fulltext",
+    "license"
+  ],
+  "title": "FulltextIndexEntry",
+  "type": "object",
+  "x-schema-version": "0.2.0"
+}

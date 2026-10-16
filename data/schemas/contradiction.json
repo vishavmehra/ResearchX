@@ -1,0 +1,299 @@
+{
+  "$defs": {
+    "ConflictType": {
+      "enum": [
+        "NUMERIC_CONFLICT",
+        "CONFIGURATION_CONFLICT",
+        "DATASET_CONFLICT",
+        "MODEL_VERSION_CONFLICT",
+        "SAMPLE_COUNT_CONFLICT",
+        "METRIC_CONFLICT",
+        "TIMELINE_CONFLICT",
+        "STUDY_IDENTITY_CONFLICT",
+        "OTHER"
+      ],
+      "title": "ConflictType",
+      "type": "string"
+    },
+    "Provenance": {
+      "additionalProperties": false,
+      "description": "Spec \u00a730 minimum provenance fields.",
+      "properties": {
+        "annotator_status": {
+          "$ref": "#/$defs/ReviewerStatus",
+          "default": "UNREVIEWED"
+        },
+        "content_hash": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Content Hash"
+        },
+        "extractor_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Extractor Version"
+        },
+        "parent_record_ids": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Parent Record Ids",
+          "type": "array"
+        },
+        "processing_version": {
+          "title": "Processing Version",
+          "type": "string"
+        },
+        "raw_path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Raw Path"
+        },
+        "retrieved_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Retrieved At"
+        },
+        "source_identifier": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Identifier"
+        },
+        "source_name": {
+          "title": "Source Name",
+          "type": "string"
+        },
+        "source_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Url"
+        },
+        "source_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Version"
+        }
+      },
+      "required": [
+        "source_name",
+        "processing_version"
+      ],
+      "title": "Provenance",
+      "type": "object"
+    },
+    "QualityTier": {
+      "enum": [
+        "GOLD",
+        "SILVER",
+        "BRONZE"
+      ],
+      "title": "QualityTier",
+      "type": "string"
+    },
+    "ResolutionStatus": {
+      "enum": [
+        "UNRESOLVED",
+        "RESOLVED",
+        "DISMISSED"
+      ],
+      "title": "ResolutionStatus",
+      "type": "string"
+    },
+    "ReviewerStatus": {
+      "enum": [
+        "UNREVIEWED",
+        "IN_REVIEW",
+        "REVIEWED",
+        "ADJUDICATED",
+        "DISPUTED"
+      ],
+      "title": "ReviewerStatus",
+      "type": "string"
+    },
+    "Split": {
+      "enum": [
+        "TRAIN",
+        "VALIDATION",
+        "TEST",
+        "GOLD_EVAL",
+        "SAFETY_EVAL",
+        "REGRESSION",
+        "TEMPORAL_TEST",
+        "CROSS_SPLIT",
+        "UNASSIGNED"
+      ],
+      "title": "Split",
+      "type": "string"
+    }
+  },
+  "$id": "researchx://schemas/0.2.0/contradiction.json",
+  "additionalProperties": false,
+  "description": "Spec \u00a718 / \u00a744: both claims preserved; no automatic winner.",
+  "properties": {
+    "claim": {
+      "title": "Claim",
+      "type": "string"
+    },
+    "conflict_type": {
+      "$ref": "#/$defs/ConflictType"
+    },
+    "contradiction_id": {
+      "title": "Contradiction Id",
+      "type": "string"
+    },
+    "evidence_a": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Evidence A",
+      "type": "array"
+    },
+    "evidence_b": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Evidence B",
+      "type": "array"
+    },
+    "explanation": {
+      "title": "Explanation",
+      "type": "string"
+    },
+    "field": {
+      "title": "Field",
+      "type": "string"
+    },
+    "provenance": {
+      "$ref": "#/$defs/Provenance"
+    },
+    "quality_tier": {
+      "$ref": "#/$defs/QualityTier",
+      "default": "SILVER"
+    },
+    "record_type": {
+      "const": "contradiction",
+      "default": "contradiction",
+      "title": "Record Type",
+      "type": "string"
+    },
+    "resolution": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Resolution"
+    },
+    "resolution_evidence": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Resolution Evidence",
+      "type": "array"
+    },
+    "resolution_status": {
+      "$ref": "#/$defs/ResolutionStatus",
+      "default": "UNRESOLVED"
+    },
+    "reviewer_status": {
+      "$ref": "#/$defs/ReviewerStatus",
+      "default": "UNREVIEWED"
+    },
+    "source_a": {
+      "title": "Source A",
+      "type": "string"
+    },
+    "source_b": {
+      "title": "Source B",
+      "type": "string"
+    },
+    "split": {
+      "$ref": "#/$defs/Split",
+      "default": "UNASSIGNED"
+    },
+    "subject_id": {
+      "title": "Subject Id",
+      "type": "string"
+    },
+    "value_a": {
+      "default": null,
+      "title": "Value A"
+    },
+    "value_b": {
+      "default": null,
+      "title": "Value B"
+    }
+  },
+  "required": [
+    "provenance",
+    "contradiction_id",
+    "subject_id",
+    "claim",
+    "field",
+    "source_a",
+    "source_b",
+    "conflict_type",
+    "evidence_a",
+    "evidence_b",
+    "explanation"
+  ],
+  "title": "Contradiction",
+  "type": "object",
+  "x-schema-version": "0.2.0"
+}

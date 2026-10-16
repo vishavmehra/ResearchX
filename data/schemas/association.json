@@ -1,0 +1,248 @@
+{
+  "$defs": {
+    "AssociationStatus": {
+      "enum": [
+        "VERIFIED",
+        "LIKELY",
+        "AMBIGUOUS",
+        "UNKNOWN",
+        "CONFLICTING"
+      ],
+      "title": "AssociationStatus",
+      "type": "string"
+    },
+    "Provenance": {
+      "additionalProperties": false,
+      "description": "Spec \u00a730 minimum provenance fields.",
+      "properties": {
+        "annotator_status": {
+          "$ref": "#/$defs/ReviewerStatus",
+          "default": "UNREVIEWED"
+        },
+        "content_hash": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Content Hash"
+        },
+        "extractor_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Extractor Version"
+        },
+        "parent_record_ids": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Parent Record Ids",
+          "type": "array"
+        },
+        "processing_version": {
+          "title": "Processing Version",
+          "type": "string"
+        },
+        "raw_path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Raw Path"
+        },
+        "retrieved_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Retrieved At"
+        },
+        "source_identifier": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Identifier"
+        },
+        "source_name": {
+          "title": "Source Name",
+          "type": "string"
+        },
+        "source_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Url"
+        },
+        "source_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Version"
+        }
+      },
+      "required": [
+        "source_name",
+        "processing_version"
+      ],
+      "title": "Provenance",
+      "type": "object"
+    },
+    "QualityTier": {
+      "enum": [
+        "GOLD",
+        "SILVER",
+        "BRONZE"
+      ],
+      "title": "QualityTier",
+      "type": "string"
+    },
+    "ReviewerStatus": {
+      "enum": [
+        "UNREVIEWED",
+        "IN_REVIEW",
+        "REVIEWED",
+        "ADJUDICATED",
+        "DISPUTED"
+      ],
+      "title": "ReviewerStatus",
+      "type": "string"
+    }
+  },
+  "$id": "researchx://schemas/0.2.0/association.json",
+  "additionalProperties": false,
+  "description": "Which result belongs to which experiment (deepening \u00a719). Never attach every score to every experiment.",
+  "properties": {
+    "association_id": {
+      "title": "Association Id",
+      "type": "string"
+    },
+    "candidate_experiment_ids": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Candidate Experiment Ids",
+      "type": "array"
+    },
+    "evidence_ids": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Evidence Ids",
+      "type": "array"
+    },
+    "experiment_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Experiment Id"
+    },
+    "matched_fields": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Matched Fields",
+      "type": "array"
+    },
+    "method_version": {
+      "title": "Method Version",
+      "type": "string"
+    },
+    "mismatched_fields": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Mismatched Fields",
+      "type": "array"
+    },
+    "provenance": {
+      "$ref": "#/$defs/Provenance"
+    },
+    "quality_tier": {
+      "$ref": "#/$defs/QualityTier",
+      "default": "SILVER"
+    },
+    "rationale": {
+      "title": "Rationale",
+      "type": "string"
+    },
+    "record_type": {
+      "const": "association",
+      "default": "association",
+      "title": "Record Type",
+      "type": "string"
+    },
+    "result_id": {
+      "title": "Result Id",
+      "type": "string"
+    },
+    "reviewer_status": {
+      "$ref": "#/$defs/ReviewerStatus",
+      "default": "UNREVIEWED"
+    },
+    "status": {
+      "$ref": "#/$defs/AssociationStatus"
+    }
+  },
+  "required": [
+    "provenance",
+    "association_id",
+    "result_id",
+    "status",
+    "rationale",
+    "method_version"
+  ],
+  "title": "ExperimentResultAssociation",
+  "type": "object",
+  "x-schema-version": "0.2.0"
+}

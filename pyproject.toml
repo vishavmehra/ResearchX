@@ -1,0 +1,33 @@
+[project]
+name = "researchx"
+version = "0.1.0"
+description = "ResearchX evidence-first research platform: dataset pipeline (Milestone 1)"
+requires-python = ">=3.12"
+# Every dependency is justified in planning/DECISIONS.md (Dataset implementation decisions).
+dependencies = [
+    "httpx>=0.28",     # HTTP client: timeouts, redirects, MockTransport for offline tests
+    "pydantic>=2.11",  # canonical schemas, model-output validation, JSON Schema export
+    "pyyaml>=6.0",     # manifests and config (DATASET_SPEC §32 uses YAML)
+    "lxml>=5.3",       # arXiv Atom feed + LaTeXML HTML parsing
+    "pyarrow>=18",     # Papers With Code archive (parquet on Hugging Face)
+    "pypdf>=5",        # PDF text fallback when arXiv HTML is unavailable
+    "psycopg[binary]>=3.2",  # Supabase PostgreSQL (system of record, pgvector) from backend services
+    "numpy>=2.1",       # BM25 postings (CSR) and embedding math for retrieval + evaluation
+    "fastapi>=0.115",   # backend HTTP API (research runs, traces, SSE); pydantic-native request validation
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "uvicorn>=0.32",    # local ASGI server; Vercel runs the app without it
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["services"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,0 +1,639 @@
+{
+  "$defs": {
+    "Figure": {
+      "additionalProperties": false,
+      "description": "0.2.0: figures are captions only; images are not interpreted.",
+      "properties": {
+        "caption": {
+          "title": "Caption",
+          "type": "string"
+        },
+        "figure_id": {
+          "title": "Figure Id",
+          "type": "string"
+        },
+        "section_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Section Id"
+        }
+      },
+      "required": [
+        "figure_id",
+        "caption"
+      ],
+      "title": "Figure",
+      "type": "object"
+    },
+    "Footnote": {
+      "additionalProperties": false,
+      "description": "0.2.0",
+      "properties": {
+        "footnote_id": {
+          "title": "Footnote Id",
+          "type": "string"
+        },
+        "paragraph_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Paragraph Id"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "footnote_id",
+        "text"
+      ],
+      "title": "Footnote",
+      "type": "object"
+    },
+    "FulltextFormat": {
+      "enum": [
+        "PDF",
+        "HTML",
+        "XML",
+        "TEI_XML",
+        "STRUCTURED_TEXT"
+      ],
+      "title": "FulltextFormat",
+      "type": "string"
+    },
+    "LicenseInfo": {
+      "additionalProperties": false,
+      "properties": {
+        "content_license": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Content License"
+        },
+        "license_source": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "License Source"
+        },
+        "metadata_license": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Metadata License"
+        },
+        "redistribution_allowed": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Redistribution Allowed"
+        },
+        "training_allowed": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Training Allowed"
+        }
+      },
+      "title": "LicenseInfo",
+      "type": "object"
+    },
+    "Paragraph": {
+      "additionalProperties": false,
+      "properties": {
+        "page": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Page"
+        },
+        "paragraph_id": {
+          "title": "Paragraph Id",
+          "type": "string"
+        },
+        "section_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Section Id"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "paragraph_id",
+        "text"
+      ],
+      "title": "Paragraph",
+      "type": "object"
+    },
+    "Section": {
+      "additionalProperties": false,
+      "properties": {
+        "is_appendix": {
+          "default": false,
+          "title": "Is Appendix",
+          "type": "boolean"
+        },
+        "level": {
+          "title": "Level",
+          "type": "integer"
+        },
+        "number": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Number"
+        },
+        "parent_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Parent Id"
+        },
+        "section_id": {
+          "title": "Section Id",
+          "type": "string"
+        },
+        "section_type": {
+          "title": "Section Type",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        }
+      },
+      "required": [
+        "section_id",
+        "title",
+        "level",
+        "section_type"
+      ],
+      "title": "Section",
+      "type": "object"
+    },
+    "Sentence": {
+      "additionalProperties": false,
+      "description": "0.2.0: sentence span inside a paragraph (offsets are into Paragraph.text).",
+      "properties": {
+        "char_end": {
+          "minimum": 0,
+          "title": "Char End",
+          "type": "integer"
+        },
+        "char_start": {
+          "minimum": 0,
+          "title": "Char Start",
+          "type": "integer"
+        },
+        "paragraph_id": {
+          "title": "Paragraph Id",
+          "type": "string"
+        },
+        "sentence_id": {
+          "title": "Sentence Id",
+          "type": "string"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "sentence_id",
+        "paragraph_id",
+        "char_start",
+        "char_end",
+        "text"
+      ],
+      "title": "Sentence",
+      "type": "object"
+    },
+    "Table": {
+      "additionalProperties": false,
+      "properties": {
+        "caption": {
+          "title": "Caption",
+          "type": "string"
+        },
+        "cells": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/TableCell"
+          },
+          "title": "Cells",
+          "type": "array"
+        },
+        "header_cols": {
+          "default": 0,
+          "title": "Header Cols",
+          "type": "integer"
+        },
+        "header_rows": {
+          "default": 0,
+          "title": "Header Rows",
+          "type": "integer"
+        },
+        "notes": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Notes",
+          "type": "array"
+        },
+        "page": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Page"
+        },
+        "rows": {
+          "items": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "title": "Rows",
+          "type": "array"
+        },
+        "section_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Section Id"
+        },
+        "table_id": {
+          "title": "Table Id",
+          "type": "string"
+        },
+        "table_type": {
+          "default": "OTHER",
+          "enum": [
+            "RESULTS",
+            "HYPERPARAMETERS",
+            "DATASET_STATISTICS",
+            "OTHER"
+          ],
+          "title": "Table Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "table_id",
+        "caption",
+        "rows"
+      ],
+      "title": "Table",
+      "type": "object"
+    },
+    "TableCell": {
+      "additionalProperties": false,
+      "description": "0.2.0: one addressable cell after rowspan/colspan expansion (deepening \u00a718).",
+      "properties": {
+        "cell_id": {
+          "title": "Cell Id",
+          "type": "string"
+        },
+        "col": {
+          "minimum": 0,
+          "title": "Col",
+          "type": "integer"
+        },
+        "col_header_path": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Col Header Path",
+          "type": "array"
+        },
+        "col_span": {
+          "default": 1,
+          "minimum": 1,
+          "title": "Col Span",
+          "type": "integer"
+        },
+        "is_header": {
+          "default": false,
+          "title": "Is Header",
+          "type": "boolean"
+        },
+        "row": {
+          "minimum": 0,
+          "title": "Row",
+          "type": "integer"
+        },
+        "row_header_path": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Row Header Path",
+          "type": "array"
+        },
+        "row_span": {
+          "default": 1,
+          "minimum": 1,
+          "title": "Row Span",
+          "type": "integer"
+        },
+        "spanned_from": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Spanned From"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        },
+        "uncertainty": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Uncertainty"
+        },
+        "unit": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Unit"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value"
+        }
+      },
+      "required": [
+        "cell_id",
+        "row",
+        "col",
+        "text"
+      ],
+      "title": "TableCell",
+      "type": "object"
+    }
+  },
+  "$id": "researchx://schemas/0.2.0/parsed_document.json",
+  "additionalProperties": false,
+  "description": "Parsed full text. Stored beside the original under data/fulltext/<class>/ (license follows source).",
+  "properties": {
+    "abstract": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Abstract"
+    },
+    "document_id": {
+      "title": "Document Id",
+      "type": "string"
+    },
+    "figures": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/Figure"
+      },
+      "title": "Figures",
+      "type": "array"
+    },
+    "footnotes": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/Footnote"
+      },
+      "title": "Footnotes",
+      "type": "array"
+    },
+    "format": {
+      "$ref": "#/$defs/FulltextFormat"
+    },
+    "license": {
+      "$ref": "#/$defs/LicenseInfo",
+      "default": {
+        "content_license": null,
+        "license_source": null,
+        "metadata_license": null,
+        "redistribution_allowed": null,
+        "training_allowed": null
+      }
+    },
+    "paper_id": {
+      "title": "Paper Id",
+      "type": "string"
+    },
+    "paragraphs": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/Paragraph"
+      },
+      "title": "Paragraphs",
+      "type": "array"
+    },
+    "parsed_at": {
+      "format": "date-time",
+      "title": "Parsed At",
+      "type": "string"
+    },
+    "parser_version": {
+      "title": "Parser Version",
+      "type": "string"
+    },
+    "record_type": {
+      "const": "parsed_document",
+      "default": "parsed_document",
+      "title": "Record Type",
+      "type": "string"
+    },
+    "sections": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/Section"
+      },
+      "title": "Sections",
+      "type": "array"
+    },
+    "sentences": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/Sentence"
+      },
+      "title": "Sentences",
+      "type": "array"
+    },
+    "source_path": {
+      "title": "Source Path",
+      "type": "string"
+    },
+    "source_record_id": {
+      "title": "Source Record Id",
+      "type": "string"
+    },
+    "source_sha256": {
+      "title": "Source Sha256",
+      "type": "string"
+    },
+    "source_url": {
+      "title": "Source Url",
+      "type": "string"
+    },
+    "tables": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/Table"
+      },
+      "title": "Tables",
+      "type": "array"
+    },
+    "title": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Title"
+    },
+    "warnings": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Warnings",
+      "type": "array"
+    }
+  },
+  "required": [
+    "document_id",
+    "paper_id",
+    "source_record_id",
+    "format",
+    "source_url",
+    "source_path",
+    "source_sha256",
+    "parser_version",
+    "parsed_at"
+  ],
+  "title": "ParsedDocument",
+  "type": "object",
+  "x-schema-version": "0.2.0"
+}

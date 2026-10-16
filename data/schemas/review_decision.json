@@ -1,0 +1,142 @@
+{
+  "$defs": {
+    "ReviewDecisionValue": {
+      "enum": [
+        "ACCEPT",
+        "REJECT",
+        "CORRECT",
+        "UNSURE"
+      ],
+      "title": "ReviewDecisionValue",
+      "type": "string"
+    },
+    "ReviewerRole": {
+      "enum": [
+        "ANNOTATOR",
+        "ADJUDICATOR"
+      ],
+      "title": "ReviewerRole",
+      "type": "string"
+    },
+    "ReviewerType": {
+      "enum": [
+        "HUMAN",
+        "AGENT"
+      ],
+      "title": "ReviewerType",
+      "type": "string"
+    }
+  },
+  "$id": "researchx://schemas/0.2.0/review_decision.json",
+  "additionalProperties": false,
+  "description": "One reviewer judgment (spec \u00a726). Disagreements are preserved, never erased.",
+  "properties": {
+    "annotation_seconds": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Annotation Seconds"
+    },
+    "comment": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Comment"
+    },
+    "corrected_field": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Corrected Field"
+    },
+    "corrected_value": {
+      "default": null,
+      "title": "Corrected Value"
+    },
+    "decision": {
+      "$ref": "#/$defs/ReviewDecisionValue"
+    },
+    "decision_id": {
+      "title": "Decision Id",
+      "type": "string"
+    },
+    "disagreement_type": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Disagreement Type"
+    },
+    "guideline_version": {
+      "title": "Guideline Version",
+      "type": "string"
+    },
+    "record_type": {
+      "const": "review_decision",
+      "default": "review_decision",
+      "title": "Record Type",
+      "type": "string"
+    },
+    "reviewer_id": {
+      "title": "Reviewer Id",
+      "type": "string"
+    },
+    "reviewer_role": {
+      "$ref": "#/$defs/ReviewerRole",
+      "default": "ANNOTATOR"
+    },
+    "reviewer_type": {
+      "$ref": "#/$defs/ReviewerType"
+    },
+    "target_id": {
+      "title": "Target Id",
+      "type": "string"
+    },
+    "target_type": {
+      "title": "Target Type",
+      "type": "string"
+    },
+    "timestamp": {
+      "format": "date-time",
+      "title": "Timestamp",
+      "type": "string"
+    }
+  },
+  "required": [
+    "decision_id",
+    "target_type",
+    "target_id",
+    "reviewer_id",
+    "reviewer_type",
+    "decision",
+    "guideline_version",
+    "timestamp"
+  ],
+  "title": "ReviewDecision",
+  "type": "object",
+  "x-schema-version": "0.2.0"
+}

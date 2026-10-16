@@ -1,0 +1,226 @@
+{
+  "$defs": {
+    "CanonicalEntityType": {
+      "enum": [
+        "DATASET",
+        "MODEL",
+        "BENCHMARK",
+        "METRIC",
+        "OPTIMIZER",
+        "SCHEDULER",
+        "HARDWARE",
+        "METHOD",
+        "TASK"
+      ],
+      "title": "CanonicalEntityType",
+      "type": "string"
+    },
+    "Provenance": {
+      "additionalProperties": false,
+      "description": "Spec \u00a730 minimum provenance fields.",
+      "properties": {
+        "annotator_status": {
+          "$ref": "#/$defs/ReviewerStatus",
+          "default": "UNREVIEWED"
+        },
+        "content_hash": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Content Hash"
+        },
+        "extractor_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Extractor Version"
+        },
+        "parent_record_ids": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Parent Record Ids",
+          "type": "array"
+        },
+        "processing_version": {
+          "title": "Processing Version",
+          "type": "string"
+        },
+        "raw_path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Raw Path"
+        },
+        "retrieved_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Retrieved At"
+        },
+        "source_identifier": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Identifier"
+        },
+        "source_name": {
+          "title": "Source Name",
+          "type": "string"
+        },
+        "source_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Url"
+        },
+        "source_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Version"
+        }
+      },
+      "required": [
+        "source_name",
+        "processing_version"
+      ],
+      "title": "Provenance",
+      "type": "object"
+    },
+    "QualityTier": {
+      "enum": [
+        "GOLD",
+        "SILVER",
+        "BRONZE"
+      ],
+      "title": "QualityTier",
+      "type": "string"
+    },
+    "ReviewerStatus": {
+      "enum": [
+        "UNREVIEWED",
+        "IN_REVIEW",
+        "REVIEWED",
+        "ADJUDICATED",
+        "DISPUTED"
+      ],
+      "title": "ReviewerStatus",
+      "type": "string"
+    }
+  },
+  "$id": "researchx://schemas/0.2.0/canonical_entity.json",
+  "additionalProperties": false,
+  "description": "Canonical concept with every original surface form kept (deepening \u00a737).",
+  "properties": {
+    "canonical_id": {
+      "title": "Canonical Id",
+      "type": "string"
+    },
+    "entity_type": {
+      "$ref": "#/$defs/CanonicalEntityType"
+    },
+    "external_ids": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "default": {},
+      "title": "External Ids",
+      "type": "object"
+    },
+    "normalization_rule": {
+      "title": "Normalization Rule",
+      "type": "string"
+    },
+    "normalization_version": {
+      "title": "Normalization Version",
+      "type": "string"
+    },
+    "normalized_name": {
+      "title": "Normalized Name",
+      "type": "string"
+    },
+    "preferred_name": {
+      "title": "Preferred Name",
+      "type": "string"
+    },
+    "provenance": {
+      "$ref": "#/$defs/Provenance"
+    },
+    "quality_tier": {
+      "$ref": "#/$defs/QualityTier",
+      "default": "SILVER"
+    },
+    "record_type": {
+      "const": "canonical_entity",
+      "default": "canonical_entity",
+      "title": "Record Type",
+      "type": "string"
+    },
+    "surface_forms": {
+      "items": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "title": "Surface Forms",
+      "type": "array"
+    }
+  },
+  "required": [
+    "provenance",
+    "canonical_id",
+    "entity_type",
+    "normalized_name",
+    "preferred_name",
+    "surface_forms",
+    "normalization_rule",
+    "normalization_version"
+  ],
+  "title": "CanonicalEntity",
+  "type": "object",
+  "x-schema-version": "0.2.0"
+}

@@ -1,0 +1,587 @@
+{
+  "$defs": {
+    "EvidenceScope": {
+      "description": "What an extracted setting applies to (decides how it may be copied onto experiments).",
+      "enum": [
+        "PAPER",
+        "TABLE",
+        "MODEL",
+        "EXPERIMENT"
+      ],
+      "title": "EvidenceScope",
+      "type": "string"
+    },
+    "EvidenceStatus": {
+      "enum": [
+        "MACHINE_EXTRACTED",
+        "SOURCE_CHECKED",
+        "HUMAN_REVIEWED",
+        "REJECTED"
+      ],
+      "title": "EvidenceStatus",
+      "type": "string"
+    },
+    "LocationKind": {
+      "description": "Granularity / kind of the location an evidence assertion points to (smallest reliable location).",
+      "enum": [
+        "PAPER_SENTENCE",
+        "PAPER_PARAGRAPH",
+        "PAPER_TABLE_CELL",
+        "PAPER_TABLE",
+        "PAPER_CAPTION",
+        "PAPER_FOOTNOTE",
+        "LEADERBOARD_CLAIM",
+        "SOURCE_METADATA",
+        "CODE_LINK_CLAIM",
+        "ARTIFACT_FILE",
+        "MODEL_CARD",
+        "RUN_RECORD",
+        "BENCHMARK_SUBMISSION",
+        "SECONDARY_CURATED"
+      ],
+      "title": "LocationKind",
+      "type": "string"
+    },
+    "Provenance": {
+      "additionalProperties": false,
+      "description": "Spec \u00a730 minimum provenance fields.",
+      "properties": {
+        "annotator_status": {
+          "$ref": "#/$defs/ReviewerStatus",
+          "default": "UNREVIEWED"
+        },
+        "content_hash": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Content Hash"
+        },
+        "extractor_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Extractor Version"
+        },
+        "parent_record_ids": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Parent Record Ids",
+          "type": "array"
+        },
+        "processing_version": {
+          "title": "Processing Version",
+          "type": "string"
+        },
+        "raw_path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Raw Path"
+        },
+        "retrieved_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Retrieved At"
+        },
+        "source_identifier": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Identifier"
+        },
+        "source_name": {
+          "title": "Source Name",
+          "type": "string"
+        },
+        "source_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Url"
+        },
+        "source_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Version"
+        }
+      },
+      "required": [
+        "source_name",
+        "processing_version"
+      ],
+      "title": "Provenance",
+      "type": "object"
+    },
+    "QualityTier": {
+      "enum": [
+        "GOLD",
+        "SILVER",
+        "BRONZE"
+      ],
+      "title": "QualityTier",
+      "type": "string"
+    },
+    "ReviewerStatus": {
+      "enum": [
+        "UNREVIEWED",
+        "IN_REVIEW",
+        "REVIEWED",
+        "ADJUDICATED",
+        "DISPUTED"
+      ],
+      "title": "ReviewerStatus",
+      "type": "string"
+    }
+  },
+  "$id": "researchx://schemas/0.2.0/evidence_assertion.json",
+  "additionalProperties": false,
+  "description": "Spec \u00a711 minimum fields (+ char offsets and license flag for the quoted text).",
+  "properties": {
+    "applies_to": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Applies To"
+    },
+    "artifact_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Artifact Id"
+    },
+    "cell": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Cell"
+    },
+    "char_end": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Char End"
+    },
+    "char_start": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Char Start"
+    },
+    "confidence": {
+      "anyOf": [
+        {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Confidence"
+    },
+    "derivation": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Derivation"
+    },
+    "derived": {
+      "default": false,
+      "title": "Derived",
+      "type": "boolean"
+    },
+    "evidence_id": {
+      "title": "Evidence Id",
+      "type": "string"
+    },
+    "evidence_text": {
+      "title": "Evidence Text",
+      "type": "string"
+    },
+    "experiment_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Experiment Id"
+    },
+    "extracted_value": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Extracted Value"
+    },
+    "extraction_model": {
+      "title": "Extraction Model",
+      "type": "string"
+    },
+    "extraction_run_id": {
+      "title": "Extraction Run Id",
+      "type": "string"
+    },
+    "field_name": {
+      "title": "Field Name",
+      "type": "string"
+    },
+    "figure": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Figure"
+    },
+    "footnote": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Footnote"
+    },
+    "is_appendix": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Is Appendix"
+    },
+    "location_kind": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/LocationKind"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "normalization_rule": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Normalization Rule"
+    },
+    "normalization_version": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Normalization Version"
+    },
+    "normalized_value": {
+      "default": null,
+      "title": "Normalized Value"
+    },
+    "page": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Page"
+    },
+    "paper_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Paper Id"
+    },
+    "paragraph": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Paragraph"
+    },
+    "provenance": {
+      "$ref": "#/$defs/Provenance"
+    },
+    "quality_tier": {
+      "$ref": "#/$defs/QualityTier",
+      "default": "SILVER"
+    },
+    "record_type": {
+      "const": "evidence",
+      "default": "evidence",
+      "title": "Record Type",
+      "type": "string"
+    },
+    "redistribution_allowed": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Redistribution Allowed"
+    },
+    "retrieval_timestamp": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Retrieval Timestamp"
+    },
+    "scope": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/EvidenceScope"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "section": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Section"
+    },
+    "sentence": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Sentence"
+    },
+    "source_location": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Source Location"
+    },
+    "source_record_id": {
+      "title": "Source Record Id",
+      "type": "string"
+    },
+    "source_version": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Source Version"
+    },
+    "status": {
+      "$ref": "#/$defs/EvidenceStatus",
+      "default": "MACHINE_EXTRACTED"
+    },
+    "study_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Study Id"
+    },
+    "table": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Table"
+    },
+    "unit": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Unit"
+    }
+  },
+  "required": [
+    "provenance",
+    "evidence_id",
+    "source_record_id",
+    "field_name",
+    "evidence_text",
+    "extraction_model",
+    "extraction_run_id"
+  ],
+  "title": "EvidenceAssertion",
+  "type": "object",
+  "x-schema-version": "0.2.0"
+}

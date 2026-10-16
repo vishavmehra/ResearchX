@@ -1,0 +1,401 @@
+{
+  "$defs": {
+    "FailureCategory": {
+      "enum": [
+        "retrieval_failure",
+        "query_failure",
+        "extraction_failure",
+        "parsing_failure",
+        "canonicalization_failure",
+        "deduplication_failure",
+        "study_linking_failure",
+        "comparison_failure",
+        "citation_failure",
+        "hallucination",
+        "contradiction_missed",
+        "wrong_abstention",
+        "wrong_laya_decision",
+        "wrong_tool_selection",
+        "prompt_injection",
+        "security_failure",
+        "media_grounding_failure",
+        "dataset_error",
+        "license_error",
+        "infrastructure_failure"
+      ],
+      "title": "FailureCategory",
+      "type": "string"
+    },
+    "LayaAction": {
+      "enum": [
+        "SEARCH",
+        "RETRIEVE_SOURCE",
+        "OPEN_SOURCE",
+        "EXTRACT",
+        "COMPARE",
+        "VERIFY",
+        "SEARCH_MORE",
+        "CHANGE_QUERY",
+        "ASK_USER",
+        "ESCALATE",
+        "HUMAN_REVIEW",
+        "GENERATE_REPORT",
+        "GENERATE_MEDIA",
+        "STOP",
+        "ABSTAIN"
+      ],
+      "title": "LayaAction",
+      "type": "string"
+    },
+    "Provenance": {
+      "additionalProperties": false,
+      "description": "Spec \u00a730 minimum provenance fields.",
+      "properties": {
+        "annotator_status": {
+          "$ref": "#/$defs/ReviewerStatus",
+          "default": "UNREVIEWED"
+        },
+        "content_hash": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Content Hash"
+        },
+        "extractor_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Extractor Version"
+        },
+        "parent_record_ids": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Parent Record Ids",
+          "type": "array"
+        },
+        "processing_version": {
+          "title": "Processing Version",
+          "type": "string"
+        },
+        "raw_path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Raw Path"
+        },
+        "retrieved_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Retrieved At"
+        },
+        "source_identifier": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Identifier"
+        },
+        "source_name": {
+          "title": "Source Name",
+          "type": "string"
+        },
+        "source_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Url"
+        },
+        "source_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Version"
+        }
+      },
+      "required": [
+        "source_name",
+        "processing_version"
+      ],
+      "title": "Provenance",
+      "type": "object"
+    },
+    "QualityTier": {
+      "enum": [
+        "GOLD",
+        "SILVER",
+        "BRONZE"
+      ],
+      "title": "QualityTier",
+      "type": "string"
+    },
+    "ReviewerStatus": {
+      "enum": [
+        "UNREVIEWED",
+        "IN_REVIEW",
+        "REVIEWED",
+        "ADJUDICATED",
+        "DISPUTED"
+      ],
+      "title": "ReviewerStatus",
+      "type": "string"
+    },
+    "Split": {
+      "enum": [
+        "TRAIN",
+        "VALIDATION",
+        "TEST",
+        "GOLD_EVAL",
+        "SAFETY_EVAL",
+        "REGRESSION",
+        "TEMPORAL_TEST",
+        "CROSS_SPLIT",
+        "UNASSIGNED"
+      ],
+      "title": "Split",
+      "type": "string"
+    }
+  },
+  "$id": "researchx://schemas/0.2.0/trajectory.json",
+  "additionalProperties": false,
+  "description": "Spec \u00a721 (one record per step). Never store secrets or raw tool arguments.",
+  "properties": {
+    "action": {
+      "$ref": "#/$defs/LayaAction"
+    },
+    "confidence_after": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Confidence After"
+    },
+    "confidence_before": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Confidence Before"
+    },
+    "cost": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Cost"
+    },
+    "evidence_added": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Evidence Added",
+      "type": "array"
+    },
+    "failure_type": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/FailureCategory"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "final_decision": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Final Decision"
+    },
+    "latency": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Latency"
+    },
+    "next_state": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Next State"
+    },
+    "outcome": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Outcome"
+    },
+    "provenance": {
+      "$ref": "#/$defs/Provenance"
+    },
+    "quality_tier": {
+      "$ref": "#/$defs/QualityTier",
+      "default": "SILVER"
+    },
+    "record_type": {
+      "const": "trajectory_step",
+      "default": "trajectory_step",
+      "title": "Record Type",
+      "type": "string"
+    },
+    "split": {
+      "$ref": "#/$defs/Split",
+      "default": "UNASSIGNED"
+    },
+    "state_id": {
+      "title": "State Id",
+      "type": "string"
+    },
+    "step_index": {
+      "minimum": 0,
+      "title": "Step Index",
+      "type": "integer"
+    },
+    "task_id": {
+      "title": "Task Id",
+      "type": "string"
+    },
+    "timestamp": {
+      "format": "date-time",
+      "title": "Timestamp",
+      "type": "string"
+    },
+    "tool": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Tool"
+    },
+    "tool_arguments_hash": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Tool Arguments Hash"
+    },
+    "tool_result_summary": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Tool Result Summary"
+    },
+    "trajectory_id": {
+      "title": "Trajectory Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "provenance",
+    "trajectory_id",
+    "task_id",
+    "state_id",
+    "step_index",
+    "timestamp",
+    "action"
+  ],
+  "title": "TrajectoryStep",
+  "type": "object",
+  "x-schema-version": "0.2.0"
+}

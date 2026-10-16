@@ -1,0 +1,118 @@
+# Model gateway routing (ARCHITECTURE §16-19). Model choice is configuration, not code.
+# Candidate names are resolved against the provider's live catalog (authenticated GET /models).
+# Verified 2026-09-30 21:25 IST: catalog lists nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B,
+# nvidia/nemotron-3-super-120b-a12b, nvidia/Nemotron-3-Ultra-550b-a55b; json_schema output works.
+# 2026-10-01: chat_template_kwargs.enable_thinking=false cut a probe from 14.8 s / 1,251 output tokens
+# to 2.9 s / 295 with complete quote-grounded JSON -> used for structured extraction.
+# typical_ms: measured p50 of a route's calls, which the router (services/model_gateway/router.py) uses to decide whether a
+# fallback still fits a latency budget. Source: rx.run_events traces 2026-10-04..14 (sample sizes noted); re-measure with
+# scripts/eval/bench_routing.py. private_data: the provider may receive private uploaded documents (it is ResearchX's own
+# inference provider under its API terms); the router never sends a user-private context to a provider without it.
+providers:
+  nebius:
+    base_url: https://api.tokenfactory.nebius.com/v1/
+    api_key_env: NEBIUS_API_KEY        # read from the environment only; never stored
+    list_models: true
+    timeout_s: 180
+    private_data: true
+
+tasks:
+  experiment_extraction:               # high-volume structured extraction: smaller efficient NVIDIA model first
+    provider: nebius
+    candidates:
+      - nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B
+      - NVIDIA-Nemotron-3-Nano-30B-A3B
+      - Nemotron-3-Nano-30B-A3B
+      - Nemotron-3-Super-120b-a12b
+    temperature: 0.0
+    max_tokens: 8192
+    structured_output: json_schema     # Nebius: response_format {type: json_schema}
+    max_retries: 3
+    extra_body:                        # provider-specific request fields merged into the body
+      chat_template_kwargs: {enable_thinking: false}
+  difficult_verification:              # contradiction analysis / high-impact checks: larger reasoning model
+    provider: nebius
+    candidates:
+      - Nemotron-3-Super-120b-a12b
+      - Nemotron-3-Ultra-550b-a55b
+      - Llama-3_1-Nemotron-Ultra-253B-v1
+    temperature: 0.0
+    max_tokens: 4096
+    structured_output: json_schema
+    max_retries: 3
+  # Interactive runtime tasks carry their own timeout_s / max_retries: a slow provider degrades one stage (traced as
+  # failed, with a safe fallback) instead of stalling the run. 2026-10-06: reranker calls of 77 s were measured live.
+  synthesis:                           # evidence-grounded answer from numbered sources (fast NVIDIA model)
+    provider: nebius
+    candidates:
+      - nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B
+      - NVIDIA-Nemotron-3-Nano-30B-A3B
+    temperature: 0.0
+    max_tokens: 2048
+    structured_output: json_schema
+    timeout_s: 40                      # failure: extractive answer (top passages verbatim)
+    max_retries: 2
+    typical_ms: 2500                   # p50 of 19 traced calls
+    extra_body:
+      chat_template_kwargs: {enable_thinking: false}
+  synthesis_complex:                   # comparison / contradiction questions: larger NVIDIA model
+    provider: nebius
+    candidates:
+      - nvidia/nemotron-3-super-120b-a12b
+      - Nemotron-3-Super-120b-a12b
+    temperature: 0.0
+    max_tokens: 3072
+    structured_output: json_schema
+    timeout_s: 60
+    max_retries: 2
+    typical_ms: 1900                   # p50 of only 3 traced calls: re-measured by scripts/eval/bench_routing.py
+    extra_body:
+      chat_template_kwargs: {enable_thinking: false}
+  reranking:                           # Phase 8: the catalog has no reranker model, so a small NVIDIA model grades candidates
+    provider: nebius
+    candidates:
+      - nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B
+      - NVIDIA-Nemotron-3-Nano-30B-A3B
+    temperature: 0.0
+    max_tokens: 1024
+    structured_output: json_schema
+    timeout_s: 20                      # failure: hybrid (RRF) order is kept
+    max_retries: 1
+    typical_ms: 2500                   # p50 of 617 traced calls (p90 8.4 s)
+    extra_body:
+      chat_template_kwargs: {enable_thinking: false}
+  field_extraction:                    # runtime: requested fields + verbatim spans for one configuration (G.validate checks every fact)
+    provider: nebius
+    candidates:
+      - nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B
+      - NVIDIA-Nemotron-3-Nano-30B-A3B
+    temperature: 0.0
+    max_tokens: 800                    # 8 facts (schema maxItems) fit in ~600; runaway outputs of 2,048 tokens took 15-24 s (2026-10-08/09)
+    structured_output: json_schema
+    timeout_s: 30                      # failure: the fields stay unknown (partial answer or abstention)
+    max_retries: 1
+    typical_ms: 1600                   # p50 of 38 traced calls
+    extra_body:
+      chat_template_kwargs: {enable_thinking: false}
+  fulltext_extraction:                 # request-time full-text reading (analyses' fill, corpus / external full texts): long passages,
+    provider: nebius                   # several fields at once. Measured 2026-10-14 on one full text: Nano returned bare values without
+    candidates:                        # verbatim spans (all 7 rejected by G.validate); Super without reasoning returned nothing (7 tokens);
+      - nvidia/nemotron-3-super-120b-a12b  # Super with reasoning returned verbatim spans (8.6 s, 1.5k tokens). Results are cached per process.
+      - Nemotron-3-Super-120b-a12b
+      - nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B
+    temperature: 0.0
+    max_tokens: 6000                   # reasoning tokens + at most 8 facts
+    structured_output: json_schema
+    timeout_s: 90                      # failure: the fields stay unknown
+    max_retries: 1
+    typical_ms: 3400                   # p50 of 4 traced calls (one probe took 8.6 s)
+    extra_body:
+      chat_template_kwargs: {enable_thinking: true}
+  embedding:                           # retrieval embeddings: documents and queries MUST use this same task
+    provider: nebius
+    candidates:
+      - Qwen/Qwen3-Embedding-8B          # only embedding model in the catalog (probe 2026-10-02)
+    dimensions: 1024                   # Matryoshka prefix; pgvector indexes need <= 2000 (halfvec <= 4000)
+    embedding_version: emb-0.1.0
+    query_instruction: "Instruct: Given a research question about machine learning experiments, retrieve paper passages, tables or captions that answer it\nQuery: "
+    max_retries: 5

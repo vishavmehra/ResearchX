@@ -1,0 +1,353 @@
+{
+  "$defs": {
+    "LayaAction": {
+      "enum": [
+        "SEARCH",
+        "RETRIEVE_SOURCE",
+        "OPEN_SOURCE",
+        "EXTRACT",
+        "COMPARE",
+        "VERIFY",
+        "SEARCH_MORE",
+        "CHANGE_QUERY",
+        "ASK_USER",
+        "ESCALATE",
+        "HUMAN_REVIEW",
+        "GENERATE_REPORT",
+        "GENERATE_MEDIA",
+        "STOP",
+        "ABSTAIN"
+      ],
+      "title": "LayaAction",
+      "type": "string"
+    },
+    "Provenance": {
+      "additionalProperties": false,
+      "description": "Spec \u00a730 minimum provenance fields.",
+      "properties": {
+        "annotator_status": {
+          "$ref": "#/$defs/ReviewerStatus",
+          "default": "UNREVIEWED"
+        },
+        "content_hash": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Content Hash"
+        },
+        "extractor_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Extractor Version"
+        },
+        "parent_record_ids": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Parent Record Ids",
+          "type": "array"
+        },
+        "processing_version": {
+          "title": "Processing Version",
+          "type": "string"
+        },
+        "raw_path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Raw Path"
+        },
+        "retrieved_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Retrieved At"
+        },
+        "source_identifier": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Identifier"
+        },
+        "source_name": {
+          "title": "Source Name",
+          "type": "string"
+        },
+        "source_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Url"
+        },
+        "source_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Version"
+        }
+      },
+      "required": [
+        "source_name",
+        "processing_version"
+      ],
+      "title": "Provenance",
+      "type": "object"
+    },
+    "QualityTier": {
+      "enum": [
+        "GOLD",
+        "SILVER",
+        "BRONZE"
+      ],
+      "title": "QualityTier",
+      "type": "string"
+    },
+    "ReviewerStatus": {
+      "enum": [
+        "UNREVIEWED",
+        "IN_REVIEW",
+        "REVIEWED",
+        "ADJUDICATED",
+        "DISPUTED"
+      ],
+      "title": "ReviewerStatus",
+      "type": "string"
+    },
+    "Split": {
+      "enum": [
+        "TRAIN",
+        "VALIDATION",
+        "TEST",
+        "GOLD_EVAL",
+        "SAFETY_EVAL",
+        "REGRESSION",
+        "TEMPORAL_TEST",
+        "CROSS_SPLIT",
+        "UNASSIGNED"
+      ],
+      "title": "Split",
+      "type": "string"
+    }
+  },
+  "$id": "researchx://schemas/0.2.0/laya_decision.json",
+  "additionalProperties": false,
+  "description": "Spec \u00a720. Laya chooses actions; the evidence system decides what evidence exists.",
+  "properties": {
+    "budget": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Budget"
+    },
+    "candidate_tools": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Candidate Tools",
+      "type": "array"
+    },
+    "current_confidence": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Current Confidence"
+    },
+    "current_state": {
+      "additionalProperties": true,
+      "title": "Current State",
+      "type": "object"
+    },
+    "decision_id": {
+      "title": "Decision Id",
+      "type": "string"
+    },
+    "evidence_available": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Evidence Available",
+      "type": "array"
+    },
+    "evidence_quality": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Evidence Quality"
+    },
+    "expected_information_gain": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Expected Information Gain"
+    },
+    "final_outcome": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Final Outcome"
+    },
+    "generation": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Generation"
+    },
+    "latency_budget": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Latency Budget"
+    },
+    "missing_information": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Missing Information",
+      "type": "array"
+    },
+    "next_action": {
+      "$ref": "#/$defs/LayaAction"
+    },
+    "previous_actions": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Previous Actions",
+      "type": "array"
+    },
+    "provenance": {
+      "$ref": "#/$defs/Provenance"
+    },
+    "quality_tier": {
+      "$ref": "#/$defs/QualityTier",
+      "default": "SILVER"
+    },
+    "rationale": {
+      "title": "Rationale",
+      "type": "string"
+    },
+    "record_type": {
+      "const": "laya_decision",
+      "default": "laya_decision",
+      "title": "Record Type",
+      "type": "string"
+    },
+    "research_goal": {
+      "title": "Research Goal",
+      "type": "string"
+    },
+    "split": {
+      "$ref": "#/$defs/Split",
+      "default": "UNASSIGNED"
+    },
+    "synthetic": {
+      "default": false,
+      "title": "Synthetic",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "provenance",
+    "decision_id",
+    "current_state",
+    "research_goal",
+    "next_action",
+    "rationale"
+  ],
+  "title": "LayaDecision",
+  "type": "object",
+  "x-schema-version": "0.2.0"
+}

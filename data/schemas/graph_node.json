@@ -1,0 +1,71 @@
+{
+  "$defs": {
+    "GraphNodeType": {
+      "enum": [
+        "Paper",
+        "SourceRecord",
+        "Study",
+        "Experiment",
+        "Dataset",
+        "Model",
+        "Benchmark",
+        "Method",
+        "Artifact",
+        "CodeRepository",
+        "Checkpoint",
+        "Result",
+        "Metric",
+        "EvidenceAssertion"
+      ],
+      "title": "GraphNodeType",
+      "type": "string"
+    }
+  },
+  "$id": "researchx://schemas/0.2.0/graph_node.json",
+  "additionalProperties": false,
+  "description": "Paper-centred knowledge graph node (derived; regenerated from records each build).",
+  "properties": {
+    "graph_version": {
+      "title": "Graph Version",
+      "type": "string"
+    },
+    "label": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Label"
+    },
+    "node_id": {
+      "title": "Node Id",
+      "type": "string"
+    },
+    "node_type": {
+      "$ref": "#/$defs/GraphNodeType"
+    },
+    "record_type": {
+      "const": "graph_node",
+      "default": "graph_node",
+      "title": "Record Type",
+      "type": "string"
+    },
+    "ref_id": {
+      "title": "Ref Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "node_id",
+    "node_type",
+    "ref_id",
+    "graph_version"
+  ],
+  "title": "GraphNode",
+  "type": "object",
+  "x-schema-version": "0.2.0"
+}

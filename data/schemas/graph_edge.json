@@ -1,0 +1,74 @@
+{
+  "$defs": {
+    "GraphEdgeType": {
+      "enum": [
+        "PAPER_HAS_VERSION",
+        "PAPER_DESCRIBES_STUDY",
+        "STUDY_HAS_EXPERIMENT",
+        "EXPERIMENT_USES_DATASET",
+        "EXPERIMENT_USES_MODEL",
+        "EXPERIMENT_USES_METHOD",
+        "EXPERIMENT_EVALUATES_ON",
+        "EXPERIMENT_PRODUCES_RESULT",
+        "RESULT_USES_METRIC",
+        "PAPER_LINKS_CODE",
+        "PAPER_LINKS_ARTIFACT",
+        "ARTIFACT_CONTAINS_CONFIG",
+        "PAPER_CITES_PAPER",
+        "SOURCE_REPORTS_STUDY",
+        "SOURCE_REPORTS_EXPERIMENT",
+        "EVIDENCE_SUPPORTS_FIELD",
+        "SOURCE_CONFLICTS_WITH_SOURCE"
+      ],
+      "title": "GraphEdgeType",
+      "type": "string"
+    }
+  },
+  "$id": "researchx://schemas/0.2.0/graph_edge.json",
+  "additionalProperties": false,
+  "properties": {
+    "derived_from": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Derived From",
+      "type": "array"
+    },
+    "edge_id": {
+      "title": "Edge Id",
+      "type": "string"
+    },
+    "edge_type": {
+      "$ref": "#/$defs/GraphEdgeType"
+    },
+    "graph_version": {
+      "title": "Graph Version",
+      "type": "string"
+    },
+    "record_type": {
+      "const": "graph_edge",
+      "default": "graph_edge",
+      "title": "Record Type",
+      "type": "string"
+    },
+    "source": {
+      "title": "Source",
+      "type": "string"
+    },
+    "target": {
+      "title": "Target",
+      "type": "string"
+    }
+  },
+  "required": [
+    "edge_id",
+    "edge_type",
+    "source",
+    "target",
+    "derived_from",
+    "graph_version"
+  ],
+  "title": "GraphEdge",
+  "type": "object",
+  "x-schema-version": "0.2.0"
+}

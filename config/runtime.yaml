@@ -1,0 +1,114 @@
+# Research runtime (Phase 18). Retrieval parameters were tuned on the VALIDATION split only and reported on
+# TEST + TEMPORAL_TEST: data/reports/retrieval_eval_v0.2.0.{json,md}. Change them only with a new evaluation run.
+release: "0.2.0"
+pipeline_version: pipeline-0.3.7   # part of the answer-cache key: bump when answers would change (0.3.0: field-level grounding; 0.3.1: grounding-0.2.0; 0.3.2: runtime external evidence, grounding-0.3.0; 0.3.3: scholarly query variants; 0.3.4: one context passage per paper + same-dataset passages of other papers; 0.3.5: abstract-only corpus papers read at question time, provider routing by need, fulltext_extraction route, injection-quote rejection; 0.3.6: model routing policy routing-0.1.0; 0.3.7: grounding-0.4.0 seeds, splits, protocols, metric definitions, checkpoints)
+
+# Model routing (services/model_gateway/router.py, docs/ARCHITECTURE.md §67). dynamic: the routing-0.1.0 policy (complexity,
+# verification, health, latency, one validated fallback). static / fixed_nano / fixed_super: the rules before routing and
+# the fixed baselines, for scripts/eval/bench_routing.py only. Budgets bound the fallback: a second model is tried only if
+# the time already spent plus its typical latency (config/models.yaml typical_ms) fits. They are routing limits; the
+# per-call timeouts stay in config/models.yaml and the monitoring targets in latency_budgets_ms below.
+routing:
+  mode: dynamic
+  latency_budget_ms:
+    reranking: 8000
+    synthesis: 20000          # Nano timing out (40 s) leaves no room for Super; an invalid output after ~3 s does
+    extraction: 12000
+    fulltext_extraction: 30000
+    fallback_answer: 20000
+
+retrieval:
+  bm25_depth: 50
+  dense_model: "Qwen/Qwen3-Embedding-8B@256"   # pgvector rows (rx.chunk_embeddings.model); 256-d fits the Free-plan quota
+  dense_dims: 256
+  dense_depth: 50
+  embedding_timeout_s: 5    # query-embedding API spikes (0.7 s typical, 8.5 s seen): beyond this, BM25 alone (traced)
+  embedding_hedge_s: 0.45   # first request still running after this: send a second, use the first answer (p50 0.42 s, p90 1.96 s on 2026-10-09)
+  rrf_k: 10                 # tuned on VALIDATION
+  dense_weight: 2.0         # tuned on VALIDATION (BM25 weight 1.0)
+  rerank_top: 20            # hybrid + LLM rerank: +0.060 nDCG@10 over hybrid, 95% CI [0.037, 0.082]
+
+evidence:
+  max_internal_sources: 8
+  max_external_sources: 4
+  source_chars: 1200
+  sufficient_if_grade3: 1   # at least one candidate the reranker grades 3 (states the requested fact)
+  sufficient_if_grade2: 2   # ... or at least two graded 2+
+  rare_term_df: 50          # ... and the graded passages mention at least half of the question's rare terms (BM25 df <= this)
+  # Evidence gap on a parameter/score question, field still unknown after the external abstracts: read the best-matching
+  # external paper's arXiv HTML (one per run) and extract from its passages/tables that name a requested field or metric.
+  fulltext_reading: true
+  fulltext_timeout_s: 4     # fetch + parse; measured 2026-10-08: fetch 0.3-0.8 s, parse 0.15-0.2 s
+  fulltext_units: 4
+  fulltext_chars: 1500
+
+cache:
+  answer_ttl_hours: 168     # per-user answer cache (rx.cache_entries kind 'model', RLS); key: pipeline version, release, user, question.
+                            # Emptied for the user when a private document is uploaded or deleted (services/api/app.py)
+  write_limit_mb: 450       # decimal MB (the Supabase quota unit): stop writing cache rows above this (quota 500 MB)
+  embedding_ttl_hours: 6    # in-process query-embedding cache, per user (services/runtime/memo.py)
+  rerank_ttl_hours: 6       # in-process reranker grades, per user; key includes every candidate's id and text hash
+
+external:
+  # Runtime providers (services/runtime/tools.py PROVIDERS), queried in parallel only when internal evidence is
+  # insufficient. Scholarly APIs get keyword terms from the parsed question; Tavily gets the question as asked. A
+  # provider whose key is missing is skipped (traced). Measured from the dev network on 2026-10-07: Semantic Scholar,
+  # OpenAlex (0.6-2.4 s) and Tavily reachable; CORE answered after >25 s; arXiv, OpenReview and Unpaywall refused TCP
+  # connections. The deadline caps every provider, so a slow or unreachable one costs at most deadline_s.
+  providers:
+    semantic_scholar: {enabled: true, limit: 5}
+    openalex: {enabled: true, limit: 5}     # free daily allowance without a key; OPENALEX_API_KEY raises it
+    arxiv: {enabled: true, limit: 5}        # at most one request per 3 s (arXiv API terms): closer calls are refused
+    core: {enabled: true, limit: 5}         # abstracts only (full texts need per-work licence checks)
+    openreview: {enabled: true, limit: 5}
+    tavily: {enabled: true, limit: 5}       # 1 credit per search
+  routing:  # missing evidence -> providers worth asking (orchestrator.route_providers); the others are skipped and traced
+    field_values: [semantic_scholar, arxiv, tavily]                         # settings: arXiv full texts (reader), repositories on the web
+    score: [semantic_scholar, arxiv, openalex, tavily]                      # results tables (arXiv full text), leaderboards
+    passage: [semantic_scholar, openalex, arxiv, core, openreview, tavily]  # open questions: scholarly breadth first, web last
+    literature: [semantic_scholar, openalex]                                # review-coverage audits: broad metadata, no web search
+    papers: [semantic_scholar, openalex, arxiv]                             # a paper the user names or a topic (services/analysis/runtime_papers.py): scholarly only
+    critique: [openreview, semantic_scholar]                                # questions about reviews, criticisms, limitations
+  timeout_s: 8             # per HTTP request (connect 3 s); 84 s S2 calls were seen before budgets existed
+  deadline_s: 9             # the whole external phase: providers still running are traced as cut off and ignored
+  grace_s: 2.5              # once one provider has returned results, the others get at most this much longer
+  retry_min_s: 1.0          # a provider that found nothing retries with the next query variant only if this much time is left
+  rate_limit_backoff_s: 1.0 # a rate-limited provider (HTTP 429) retries once after this pause; S2 answered 429 in 3 of 10 runs (2026-10-09)
+  cache_ttl_hours: 24       # per-user cache of provider results (rx.cache_entries kind 'api', RLS); never shared
+
+# Laya decision layer (services/laya/decider.py, docs/ARCHITECTURE.md §59): typed decisions beside every run, advisory,
+# served by laya-serve (its own process; scripts/dev/start_local.ps1 starts it on 127.0.0.1:8090). shadow: traced next
+# to the deterministic rules' choice, never applied. advise: may pick synthesis_complex when its confidence passes
+# min_confidence and the rules found no intent. RESEARCHX_LAYA=0 turns it off; RESEARCHX_LAYA_URL points elsewhere.
+# English checkpoint: ~421M parameters, ~1.1 s per decision and ~70 s to build on this laptop's CPU (2026-10-10).
+laya:
+  enabled: true
+  mode: shadow
+  model: english
+  url: http://127.0.0.1:8090
+  timeout_s: 4              # per decision; a slower or unreachable service is traced as failed and the run carries on
+  min_confidence: 0.8       # the shipped checkpoint reports uncalibrated temperatures: answers below are traced as abstained
+  budget_ms: 1500           # advise mode waits at most this long at research_strategy; later answers change nothing
+
+# Per-stage latency budgets (ms): each stage that runs records budget_ms and over_budget in its trace row. Targets for
+# monitoring, not timeouts (timeouts: config/models.yaml timeout_s, external.timeout_s / deadline_s, embedding_timeout_s).
+latency_budgets_ms:
+  query_understanding: 300
+  cache_lookup: 300
+  bm25: 300
+  pgvector: 1500
+  hybrid_fusion: 600
+  reranking: 6000
+  experiment_extraction: 1500
+  evidence_extraction: 8000
+  evidence_assessment: 300
+  external_sources: 9000
+  tavily: 9000
+  source_validation: 500
+  external_extraction: 8000
+  contradiction_detection: 400
+  evidence_selection: 300
+  synthesis: 15000
+  citation_validation: 200
+  graph_enrichment: 400
+  answer: 300

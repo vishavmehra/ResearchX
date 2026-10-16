@@ -1,0 +1,288 @@
+{
+  "$defs": {
+    "HardCaseType": {
+      "description": "Deepening \u00a725: lexical similarity and scientific equivalence pointing in different directions.",
+      "enum": [
+        "DIFFERENT_TERMINOLOGY_SAME_EXPERIMENT",
+        "SAME_TITLE_DIFFERENT_EXPERIMENT",
+        "SAME_DATASET_DIFFERENT_SPLIT",
+        "SAME_MODEL_DIFFERENT_CHECKPOINT",
+        "SAME_MODEL_DIFFERENT_OBJECTIVE",
+        "SAME_BENCHMARK_DIFFERENT_PROTOCOL",
+        "SAME_STUDY_DIFFERENT_REPORT",
+        "SAME_EXPERIMENT_DIFFERENT_WORDING",
+        "CONFLICTING_SOURCE_METADATA",
+        "MISSING_CRITICAL_PROTOCOL",
+        "SAME_SETUP_DIFFERENT_HYPERPARAMETERS"
+      ],
+      "title": "HardCaseType",
+      "type": "string"
+    },
+    "Provenance": {
+      "additionalProperties": false,
+      "description": "Spec \u00a730 minimum provenance fields.",
+      "properties": {
+        "annotator_status": {
+          "$ref": "#/$defs/ReviewerStatus",
+          "default": "UNREVIEWED"
+        },
+        "content_hash": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Content Hash"
+        },
+        "extractor_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Extractor Version"
+        },
+        "parent_record_ids": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Parent Record Ids",
+          "type": "array"
+        },
+        "processing_version": {
+          "title": "Processing Version",
+          "type": "string"
+        },
+        "raw_path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Raw Path"
+        },
+        "retrieved_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Retrieved At"
+        },
+        "source_identifier": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Identifier"
+        },
+        "source_name": {
+          "title": "Source Name",
+          "type": "string"
+        },
+        "source_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Url"
+        },
+        "source_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Version"
+        }
+      },
+      "required": [
+        "source_name",
+        "processing_version"
+      ],
+      "title": "Provenance",
+      "type": "object"
+    },
+    "QualityTier": {
+      "enum": [
+        "GOLD",
+        "SILVER",
+        "BRONZE"
+      ],
+      "title": "QualityTier",
+      "type": "string"
+    },
+    "ReviewerStatus": {
+      "enum": [
+        "UNREVIEWED",
+        "IN_REVIEW",
+        "REVIEWED",
+        "ADJUDICATED",
+        "DISPUTED"
+      ],
+      "title": "ReviewerStatus",
+      "type": "string"
+    },
+    "Split": {
+      "enum": [
+        "TRAIN",
+        "VALIDATION",
+        "TEST",
+        "GOLD_EVAL",
+        "SAFETY_EVAL",
+        "REGRESSION",
+        "TEMPORAL_TEST",
+        "CROSS_SPLIT",
+        "UNASSIGNED"
+      ],
+      "title": "Split",
+      "type": "string"
+    }
+  },
+  "$id": "researchx://schemas/0.2.0/hard_case.json",
+  "additionalProperties": false,
+  "description": "Lexical similarity vs scientific equivalence case with field-level justification (deepening \u00a725).",
+  "properties": {
+    "case_id": {
+      "title": "Case Id",
+      "type": "string"
+    },
+    "case_type": {
+      "$ref": "#/$defs/HardCaseType"
+    },
+    "differing_fields": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Differing Fields",
+      "type": "array"
+    },
+    "evidence_ids": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Evidence Ids",
+      "type": "array"
+    },
+    "generator_version": {
+      "title": "Generator Version",
+      "type": "string"
+    },
+    "lexical_similarity": {
+      "maximum": 1,
+      "minimum": 0,
+      "title": "Lexical Similarity",
+      "type": "number"
+    },
+    "matching_fields": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Matching Fields",
+      "type": "array"
+    },
+    "provenance": {
+      "$ref": "#/$defs/Provenance"
+    },
+    "quality_tier": {
+      "$ref": "#/$defs/QualityTier",
+      "default": "SILVER"
+    },
+    "rationale": {
+      "title": "Rationale",
+      "type": "string"
+    },
+    "record_a": {
+      "title": "Record A",
+      "type": "string"
+    },
+    "record_b": {
+      "title": "Record B",
+      "type": "string"
+    },
+    "record_kind": {
+      "enum": [
+        "experiment",
+        "paper"
+      ],
+      "title": "Record Kind",
+      "type": "string"
+    },
+    "record_type": {
+      "const": "hard_case",
+      "default": "hard_case",
+      "title": "Record Type",
+      "type": "string"
+    },
+    "reviewer_status": {
+      "$ref": "#/$defs/ReviewerStatus",
+      "default": "UNREVIEWED"
+    },
+    "scientific_relation": {
+      "title": "Scientific Relation",
+      "type": "string"
+    },
+    "split": {
+      "$ref": "#/$defs/Split",
+      "default": "UNASSIGNED"
+    },
+    "unknown_fields": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Unknown Fields",
+      "type": "array"
+    }
+  },
+  "required": [
+    "provenance",
+    "case_id",
+    "case_type",
+    "record_kind",
+    "record_a",
+    "record_b",
+    "lexical_similarity",
+    "scientific_relation",
+    "rationale",
+    "generator_version"
+  ],
+  "title": "HardCase",
+  "type": "object",
+  "x-schema-version": "0.2.0"
+}

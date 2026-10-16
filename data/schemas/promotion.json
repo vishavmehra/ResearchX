@@ -1,0 +1,76 @@
+{
+  "$defs": {
+    "QualityTier": {
+      "enum": [
+        "GOLD",
+        "SILVER",
+        "BRONZE"
+      ],
+      "title": "QualityTier",
+      "type": "string"
+    }
+  },
+  "$id": "researchx://schemas/0.2.0/promotion.json",
+  "additionalProperties": false,
+  "description": "Every tier promotion is recorded (spec \u00a725).",
+  "properties": {
+    "decision_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Decision Ids",
+      "type": "array"
+    },
+    "from_tier": {
+      "$ref": "#/$defs/QualityTier"
+    },
+    "promoted_at": {
+      "format": "date-time",
+      "title": "Promoted At",
+      "type": "string"
+    },
+    "promoted_by": {
+      "title": "Promoted By",
+      "type": "string"
+    },
+    "promotion_id": {
+      "title": "Promotion Id",
+      "type": "string"
+    },
+    "reason": {
+      "title": "Reason",
+      "type": "string"
+    },
+    "record_type": {
+      "const": "promotion",
+      "default": "promotion",
+      "title": "Record Type",
+      "type": "string"
+    },
+    "target_id": {
+      "title": "Target Id",
+      "type": "string"
+    },
+    "target_type": {
+      "title": "Target Type",
+      "type": "string"
+    },
+    "to_tier": {
+      "$ref": "#/$defs/QualityTier"
+    }
+  },
+  "required": [
+    "promotion_id",
+    "target_type",
+    "target_id",
+    "from_tier",
+    "to_tier",
+    "decision_ids",
+    "promoted_at",
+    "promoted_by",
+    "reason"
+  ],
+  "title": "PromotionRecord",
+  "type": "object",
+  "x-schema-version": "0.2.0"
+}

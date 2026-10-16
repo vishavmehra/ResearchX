@@ -1,0 +1,294 @@
+{
+  "$defs": {
+    "ExpectedBehavior": {
+      "enum": [
+        "ANSWER",
+        "ABSTAIN",
+        "ESCALATE",
+        "SEARCH_MORE",
+        "ASK_USER"
+      ],
+      "title": "ExpectedBehavior",
+      "type": "string"
+    },
+    "Provenance": {
+      "additionalProperties": false,
+      "description": "Spec \u00a730 minimum provenance fields.",
+      "properties": {
+        "annotator_status": {
+          "$ref": "#/$defs/ReviewerStatus",
+          "default": "UNREVIEWED"
+        },
+        "content_hash": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Content Hash"
+        },
+        "extractor_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Extractor Version"
+        },
+        "parent_record_ids": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Parent Record Ids",
+          "type": "array"
+        },
+        "processing_version": {
+          "title": "Processing Version",
+          "type": "string"
+        },
+        "raw_path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Raw Path"
+        },
+        "retrieved_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Retrieved At"
+        },
+        "source_identifier": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Identifier"
+        },
+        "source_name": {
+          "title": "Source Name",
+          "type": "string"
+        },
+        "source_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Url"
+        },
+        "source_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Version"
+        }
+      },
+      "required": [
+        "source_name",
+        "processing_version"
+      ],
+      "title": "Provenance",
+      "type": "object"
+    },
+    "QualityTier": {
+      "enum": [
+        "GOLD",
+        "SILVER",
+        "BRONZE"
+      ],
+      "title": "QualityTier",
+      "type": "string"
+    },
+    "ResearchTaskType": {
+      "enum": [
+        "duplicate_experiment_detection",
+        "prior_art_experiment_search",
+        "experiment_extension_search",
+        "benchmark_comparison",
+        "model_configuration_comparison",
+        "dataset_protocol_comparison",
+        "ablation_comparison",
+        "study_linking",
+        "contradiction_investigation",
+        "evidence_verification",
+        "missing_protocol_search",
+        "replication_discovery",
+        "research_novelty_assessment",
+        "preflight_experiment_review"
+      ],
+      "title": "ResearchTaskType",
+      "type": "string"
+    },
+    "ReviewerStatus": {
+      "enum": [
+        "UNREVIEWED",
+        "IN_REVIEW",
+        "REVIEWED",
+        "ADJUDICATED",
+        "DISPUTED"
+      ],
+      "title": "ReviewerStatus",
+      "type": "string"
+    },
+    "Split": {
+      "enum": [
+        "TRAIN",
+        "VALIDATION",
+        "TEST",
+        "GOLD_EVAL",
+        "SAFETY_EVAL",
+        "REGRESSION",
+        "TEMPORAL_TEST",
+        "CROSS_SPLIT",
+        "UNASSIGNED"
+      ],
+      "title": "Split",
+      "type": "string"
+    }
+  },
+  "$id": "researchx://schemas/0.2.0/research_task.json",
+  "additionalProperties": false,
+  "description": "A realistic research task over real records (deepening \u00a724). Wording may be templated; evidence is real.",
+  "properties": {
+    "context_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Context Ids",
+      "type": "array"
+    },
+    "decisive_fields": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Decisive Fields",
+      "type": "array"
+    },
+    "evidence_ids": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Evidence Ids",
+      "type": "array"
+    },
+    "expected_answer": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Expected Answer"
+    },
+    "expected_behavior": {
+      "$ref": "#/$defs/ExpectedBehavior"
+    },
+    "generator_version": {
+      "title": "Generator Version",
+      "type": "string"
+    },
+    "proposed_experiment": {
+      "additionalProperties": true,
+      "default": {},
+      "title": "Proposed Experiment",
+      "type": "object"
+    },
+    "provenance": {
+      "$ref": "#/$defs/Provenance"
+    },
+    "quality_tier": {
+      "$ref": "#/$defs/QualityTier",
+      "default": "SILVER"
+    },
+    "question": {
+      "title": "Question",
+      "type": "string"
+    },
+    "rationale": {
+      "title": "Rationale",
+      "type": "string"
+    },
+    "record_type": {
+      "const": "research_task",
+      "default": "research_task",
+      "title": "Record Type",
+      "type": "string"
+    },
+    "reviewer_status": {
+      "$ref": "#/$defs/ReviewerStatus",
+      "default": "UNREVIEWED"
+    },
+    "split": {
+      "$ref": "#/$defs/Split",
+      "default": "UNASSIGNED"
+    },
+    "synthetic_text": {
+      "default": true,
+      "title": "Synthetic Text",
+      "type": "boolean"
+    },
+    "task_id": {
+      "title": "Task Id",
+      "type": "string"
+    },
+    "task_type": {
+      "$ref": "#/$defs/ResearchTaskType"
+    }
+  },
+  "required": [
+    "provenance",
+    "task_id",
+    "task_type",
+    "question",
+    "context_ids",
+    "expected_behavior",
+    "rationale",
+    "generator_version"
+  ],
+  "title": "ResearchTask",
+  "type": "object",
+  "x-schema-version": "0.2.0"
+}

@@ -1,0 +1,1206 @@
+{
+  "$defs": {
+    "Artifacts": {
+      "additionalProperties": false,
+      "properties": {
+        "benchmark_submission_url": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "benchmark_url": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "checkpoint_url": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "commit": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "configuration_file": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "dataset_url": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "demo_url": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "experiment_logs_url": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "model_card_url": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "paper_url": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "release": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "repository_url": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "supplementary_material_url": {
+          "$ref": "#/$defs/FieldValue"
+        }
+      },
+      "title": "Artifacts",
+      "type": "object"
+    },
+    "ComputeConfiguration": {
+      "additionalProperties": false,
+      "properties": {
+        "accelerator": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "cost": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "cpu": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "energy": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "flops": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "gpu_count": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "gpu_model": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "inference_time": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "memory": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "training_time": {
+          "$ref": "#/$defs/FieldValue"
+        }
+      },
+      "title": "ComputeConfiguration",
+      "type": "object"
+    },
+    "DatasetConfiguration": {
+      "additionalProperties": false,
+      "properties": {
+        "augmentation": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "data_leakage_controls": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "dataset_name": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "dataset_source": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "dataset_version": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "deduplication": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "filtering": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "preprocessing": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "sample_count": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "sampling_method": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "split": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "split_construction": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "test_data": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "train_data": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "validation_data": {
+          "$ref": "#/$defs/FieldValue"
+        }
+      },
+      "title": "DatasetConfiguration",
+      "type": "object"
+    },
+    "DepthAssessment": {
+      "additionalProperties": false,
+      "description": "Experiment technical depth from evidence coverage, never model confidence (docs/DATASET_DEEPENING.md \u00a72).",
+      "properties": {
+        "artifact_fields": {
+          "minimum": 0,
+          "title": "Artifact Fields",
+          "type": "integer"
+        },
+        "depth_version": {
+          "title": "Depth Version",
+          "type": "string"
+        },
+        "dimensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/DimensionCoverage"
+          },
+          "title": "Dimensions",
+          "type": "object"
+        },
+        "human_reviewed_fields": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Human Reviewed Fields",
+          "type": "integer"
+        },
+        "paper_text_fields": {
+          "minimum": 0,
+          "title": "Paper Text Fields",
+          "type": "integer"
+        },
+        "technical_fields_known": {
+          "minimum": 0,
+          "title": "Technical Fields Known",
+          "type": "integer"
+        },
+        "tier": {
+          "$ref": "#/$defs/DepthTier"
+        }
+      },
+      "required": [
+        "tier",
+        "dimensions",
+        "technical_fields_known",
+        "paper_text_fields",
+        "artifact_fields",
+        "depth_version"
+      ],
+      "title": "DepthAssessment",
+      "type": "object"
+    },
+    "DepthTier": {
+      "enum": [
+        "metadata_only",
+        "shallow_result",
+        "partial_configuration",
+        "deep_configuration",
+        "reproducible_configuration",
+        "fully_verified_experiment"
+      ],
+      "title": "DepthTier",
+      "type": "string"
+    },
+    "DimensionCoverage": {
+      "additionalProperties": false,
+      "properties": {
+        "known": {
+          "minimum": 0,
+          "title": "Known",
+          "type": "integer"
+        },
+        "total": {
+          "minimum": 0,
+          "title": "Total",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "known",
+        "total"
+      ],
+      "title": "DimensionCoverage",
+      "type": "object"
+    },
+    "EvaluationConfiguration": {
+      "additionalProperties": false,
+      "properties": {
+        "aggregation_method": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "benchmark": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "dataset_split": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "evaluation_population": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "evaluation_protocol": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "metric_definition": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "statistical_test": {
+          "$ref": "#/$defs/FieldValue"
+        }
+      },
+      "title": "EvaluationConfiguration",
+      "type": "object"
+    },
+    "ExperimentType": {
+      "enum": [
+        "MAIN",
+        "BASELINE",
+        "ABLATION",
+        "SENSITIVITY",
+        "SCALING",
+        "ROBUSTNESS",
+        "TRANSFER",
+        "EFFICIENCY",
+        "INFERENCE",
+        "TRAINING",
+        "EVALUATION",
+        "OTHER"
+      ],
+      "title": "ExperimentType",
+      "type": "string"
+    },
+    "ExtractionMethod": {
+      "enum": [
+        "RULES",
+        "LLM",
+        "SOURCE_IMPORT",
+        "HUMAN"
+      ],
+      "title": "ExtractionMethod",
+      "type": "string"
+    },
+    "FieldStatus": {
+      "enum": [
+        "KNOWN",
+        "UNKNOWN",
+        "NOT_APPLICABLE",
+        "CONFLICTING"
+      ],
+      "title": "FieldStatus",
+      "type": "string"
+    },
+    "FieldValue": {
+      "additionalProperties": false,
+      "properties": {
+        "derivation": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Derivation"
+        },
+        "derived": {
+          "default": false,
+          "title": "Derived",
+          "type": "boolean"
+        },
+        "evidence_ids": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "normalization_rule": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Normalization Rule"
+        },
+        "normalization_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Normalization Version"
+        },
+        "raw_value": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Raw Value"
+        },
+        "status": {
+          "$ref": "#/$defs/FieldStatus",
+          "default": "UNKNOWN"
+        },
+        "unit": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Unit"
+        },
+        "value": {
+          "default": null,
+          "title": "Value"
+        }
+      },
+      "title": "FieldValue",
+      "type": "object"
+    },
+    "InferenceConfiguration": {
+      "additionalProperties": false,
+      "properties": {
+        "batching": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "context_length": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "decoding_strategy": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "hardware": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "inference_model": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "max_tokens": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "retrieval_configuration": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "system_prompt": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "temperature": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "tool_configuration": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "top_k": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "top_p": {
+          "$ref": "#/$defs/FieldValue"
+        }
+      },
+      "title": "InferenceConfiguration",
+      "type": "object"
+    },
+    "MethodConfiguration": {
+      "additionalProperties": false,
+      "properties": {
+        "ablation": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "algorithm": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "baseline": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "loss_function": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "method_name": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "modifications": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "objective": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "training_strategy": {
+          "$ref": "#/$defs/FieldValue"
+        }
+      },
+      "title": "MethodConfiguration",
+      "type": "object"
+    },
+    "ModelConfiguration": {
+      "additionalProperties": false,
+      "properties": {
+        "active_parameter_count": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "architecture": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "base_model": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "checkpoint": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "context_length": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "initialization": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "model_family": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "model_name": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "model_version": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "parameter_count": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "pretrained_source": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "tokenizer": {
+          "$ref": "#/$defs/FieldValue"
+        }
+      },
+      "title": "ModelConfiguration",
+      "type": "object"
+    },
+    "OutcomeObservation": {
+      "additionalProperties": false,
+      "properties": {
+        "confidence_interval": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "dataset_split": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "metric": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "p_value": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "score": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "significance": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "uncertainty": {
+          "$ref": "#/$defs/FieldValue"
+        }
+      },
+      "title": "OutcomeObservation",
+      "type": "object"
+    },
+    "PopulationContext": {
+      "additionalProperties": false,
+      "properties": {
+        "benchmark_subsets": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "dataset_cohorts": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "documents": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "domains": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "evaluation_groups": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "languages": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "queries": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "task_populations": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "users": {
+          "$ref": "#/$defs/FieldValue"
+        }
+      },
+      "title": "PopulationContext",
+      "type": "object"
+    },
+    "PromptingConfiguration": {
+      "additionalProperties": false,
+      "properties": {
+        "agent_framework": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "chain_of_thought": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "few_shot_examples": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "memory": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "number_of_steps": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "planner": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "prompt_template": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "stopping_condition": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "tool_usage": {
+          "$ref": "#/$defs/FieldValue"
+        }
+      },
+      "title": "PromptingConfiguration",
+      "type": "object"
+    },
+    "Provenance": {
+      "additionalProperties": false,
+      "description": "Spec \u00a730 minimum provenance fields.",
+      "properties": {
+        "annotator_status": {
+          "$ref": "#/$defs/ReviewerStatus",
+          "default": "UNREVIEWED"
+        },
+        "content_hash": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Content Hash"
+        },
+        "extractor_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Extractor Version"
+        },
+        "parent_record_ids": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Parent Record Ids",
+          "type": "array"
+        },
+        "processing_version": {
+          "title": "Processing Version",
+          "type": "string"
+        },
+        "raw_path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Raw Path"
+        },
+        "retrieved_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Retrieved At"
+        },
+        "source_identifier": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Identifier"
+        },
+        "source_name": {
+          "title": "Source Name",
+          "type": "string"
+        },
+        "source_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Url"
+        },
+        "source_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Version"
+        }
+      },
+      "required": [
+        "source_name",
+        "processing_version"
+      ],
+      "title": "Provenance",
+      "type": "object"
+    },
+    "QualityDimensions": {
+      "additionalProperties": false,
+      "description": "Scientific-quality dimensions beside the BRONZE/SILVER/GOLD tier (deepening \u00a729). Unset = not applicable.",
+      "properties": {
+        "artifact_verification_quality": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/QualityLevel"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "comparison_quality": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/QualityLevel"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "configuration_completeness": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/QualityLevel"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "evidence_quality": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/QualityLevel"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "experiment_attribution_quality": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/QualityLevel"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "quality_version": {
+          "title": "Quality Version",
+          "type": "string"
+        },
+        "study_identity_quality": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/QualityLevel"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "quality_version"
+      ],
+      "title": "QualityDimensions",
+      "type": "object"
+    },
+    "QualityLevel": {
+      "enum": [
+        "HUMAN_VERIFIED",
+        "HIGH",
+        "MEDIUM",
+        "LOW",
+        "NONE",
+        "UNKNOWN",
+        "CONFLICTING"
+      ],
+      "title": "QualityLevel",
+      "type": "string"
+    },
+    "QualityTier": {
+      "enum": [
+        "GOLD",
+        "SILVER",
+        "BRONZE"
+      ],
+      "title": "QualityTier",
+      "type": "string"
+    },
+    "ResearchQuestion": {
+      "additionalProperties": false,
+      "properties": {
+        "domain": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "hypothesis": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "research_question": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "subtask": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "task": {
+          "$ref": "#/$defs/FieldValue"
+        }
+      },
+      "title": "ResearchQuestion",
+      "type": "object"
+    },
+    "RetrievalConfiguration": {
+      "additionalProperties": false,
+      "properties": {
+        "chunk_overlap": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "chunk_size": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "embedding_model": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "index_type": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "reranker": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "reranking": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "retrieval_corpus": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "retrieval_model": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "retrieval_prompt": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "retrieval_strategy": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "retrieval_top_k": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "retriever": {
+          "$ref": "#/$defs/FieldValue"
+        }
+      },
+      "title": "RetrievalConfiguration",
+      "type": "object"
+    },
+    "ReviewerStatus": {
+      "enum": [
+        "UNREVIEWED",
+        "IN_REVIEW",
+        "REVIEWED",
+        "ADJUDICATED",
+        "DISPUTED"
+      ],
+      "title": "ReviewerStatus",
+      "type": "string"
+    },
+    "Split": {
+      "enum": [
+        "TRAIN",
+        "VALIDATION",
+        "TEST",
+        "GOLD_EVAL",
+        "SAFETY_EVAL",
+        "REGRESSION",
+        "TEMPORAL_TEST",
+        "CROSS_SPLIT",
+        "UNASSIGNED"
+      ],
+      "title": "Split",
+      "type": "string"
+    },
+    "TrainingConfiguration": {
+      "additionalProperties": false,
+      "properties": {
+        "batch_size": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "dora": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "dropout": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "epochs": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "gradient_accumulation": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "gradient_clipping": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "learning_rate": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "learning_rate_schedule": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "lora": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "optimizer": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "other_parameter_efficient_configuration": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "peft_alpha": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "peft_rank": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "peft_target_modules": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "precision": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "qlora": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "quantization": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "seed": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "steps": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "warmup_ratio": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "warmup_steps": {
+          "$ref": "#/$defs/FieldValue"
+        },
+        "weight_decay": {
+          "$ref": "#/$defs/FieldValue"
+        }
+      },
+      "title": "TrainingConfiguration",
+      "type": "object"
+    }
+  },
+  "$id": "researchx://schemas/0.2.0/experiment.json",
+  "additionalProperties": false,
+  "description": "One experimental condition (spec \u00a72, \u00a710). Outcomes hold per-metric observations.",
+  "properties": {
+    "artifacts": {
+      "$ref": "#/$defs/Artifacts"
+    },
+    "compute": {
+      "$ref": "#/$defs/ComputeConfiguration"
+    },
+    "confidence": {
+      "anyOf": [
+        {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Confidence"
+    },
+    "cross_check": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Cross Check"
+    },
+    "dataset": {
+      "$ref": "#/$defs/DatasetConfiguration"
+    },
+    "depth": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/DepthAssessment"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "description": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Description"
+    },
+    "evaluation": {
+      "$ref": "#/$defs/EvaluationConfiguration"
+    },
+    "experiment_id": {
+      "title": "Experiment Id",
+      "type": "string"
+    },
+    "experiment_source": {
+      "default": "PAPER",
+      "enum": [
+        "PAPER",
+        "OPENML",
+        "MLPERF"
+      ],
+      "title": "Experiment Source",
+      "type": "string"
+    },
+    "experiment_type": {
+      "$ref": "#/$defs/ExperimentType",
+      "default": "OTHER"
+    },
+    "extraction_method": {
+      "$ref": "#/$defs/ExtractionMethod"
+    },
+    "extraction_model": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Extraction Model"
+    },
+    "extraction_run_id": {
+      "title": "Extraction Run Id",
+      "type": "string"
+    },
+    "inference": {
+      "$ref": "#/$defs/InferenceConfiguration"
+    },
+    "method": {
+      "$ref": "#/$defs/MethodConfiguration"
+    },
+    "model": {
+      "$ref": "#/$defs/ModelConfiguration"
+    },
+    "outcomes": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/OutcomeObservation"
+      },
+      "title": "Outcomes",
+      "type": "array"
+    },
+    "paper_id": {
+      "title": "Paper Id",
+      "type": "string"
+    },
+    "parent_experiment_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Parent Experiment Id"
+    },
+    "population": {
+      "$ref": "#/$defs/PopulationContext"
+    },
+    "prompting": {
+      "$ref": "#/$defs/PromptingConfiguration"
+    },
+    "provenance": {
+      "$ref": "#/$defs/Provenance"
+    },
+    "quality": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/QualityDimensions"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "quality_tier": {
+      "$ref": "#/$defs/QualityTier",
+      "default": "SILVER"
+    },
+    "record_type": {
+      "const": "experiment",
+      "default": "experiment",
+      "title": "Record Type",
+      "type": "string"
+    },
+    "research": {
+      "$ref": "#/$defs/ResearchQuestion"
+    },
+    "retrieval": {
+      "$ref": "#/$defs/RetrievalConfiguration"
+    },
+    "reviewer_status": {
+      "$ref": "#/$defs/ReviewerStatus",
+      "default": "UNREVIEWED"
+    },
+    "source_record_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Source Record Ids",
+      "type": "array"
+    },
+    "split": {
+      "$ref": "#/$defs/Split",
+      "default": "UNASSIGNED"
+    },
+    "study_id": {
+      "title": "Study Id",
+      "type": "string"
+    },
+    "synthetic": {
+      "default": false,
+      "title": "Synthetic",
+      "type": "boolean"
+    },
+    "training": {
+      "$ref": "#/$defs/TrainingConfiguration"
+    },
+    "uncertainty": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Uncertainty"
+    },
+    "unresolved_fields": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Unresolved Fields",
+      "type": "array"
+    }
+  },
+  "required": [
+    "provenance",
+    "experiment_id",
+    "study_id",
+    "paper_id",
+    "source_record_ids",
+    "extraction_method",
+    "extraction_run_id"
+  ],
+  "title": "Experiment",
+  "type": "object",
+  "x-schema-version": "0.2.0"
+}

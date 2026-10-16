@@ -1,0 +1,73 @@
+# Pipeline configuration. Secrets are NEVER stored here: only the names of env variables.
+dataset_version: "0.2.0"   # v0.1.0 is frozen (data/releases/v0.1.0); builds now produce v0.2.0
+contact_email_env: RESEARCHX_CONTACT_EMAIL   # optional; sent to OpenAlex as mailto only if set
+
+sources:
+  OPENALEX:
+    min_interval_s: 0.2
+    max_retries: 6
+    api_key_env: OPENALEX_API_KEY
+    min_remaining_usd: 0.01        # stop paginating before the daily free allowance is exhausted
+  SEMANTIC_SCHOLAR:
+    min_interval_s: 1.5            # unauthenticated shared pool returns 429 often; backoff handles it
+    max_retries: 8
+    api_key_env: S2_API_KEY
+    batch_size: 100                # POST /graph/v1/paper/batch accepts up to 500 ids
+  ARXIV:
+    min_interval_s: 3.1            # arXiv API ToU: no more than one request every three seconds
+    max_retries: 5
+    batch_size: 50
+  ARXIV_OAI_PMH:                   # Layer 0 discovery (CC0 metadata + per-paper licence); probed 2026-09-30
+    base_url: https://oaipmh.arxiv.org/oai
+    metadata_prefix: arXivRaw      # version history + licence per record
+    min_interval_s: 3.1            # legacy-API ToU (covers OAI-PMH): <= 1 request / 3 s, one connection
+    max_retries: 6
+    sets: ["cs:cs:CL", "cs:cs:LG", "cs:cs:AI", "cs:cs:IR", "cs:cs:MA", "cs:cs:CV"]
+    from: "2024-01-01"             # OAI datestamp windows (last modification), harvested month by month
+    until: "2026-09-30"
+  PAPERS_WITH_CODE:
+    min_interval_s: 0.5
+    max_retries: 5
+    # Hugging Face snapshot of the discontinued Papers With Code service; pinned commits
+    # make the acquisition reproducible (resolved and recorded at acquisition time).
+    hf_datasets:
+      links: pwc-archive/links-between-paper-and-code
+      evaluation_tables: pwc-archive/evaluation-tables
+
+corpus:
+  smoke:
+    areas: [peft]
+    per_area_most_cited: 20
+    per_area_recent: 0
+    fallback_most_cited: 20
+    fallback_recent: 0
+  initial:                         # ~12 areas x (60 + 20) with overlap -> target 500-1,000 papers
+    per_area_most_cited: 60
+    per_area_recent: 20
+    fallback_most_cited: 1000      # topic_fallback: relevance filter keeps priority-area papers
+    fallback_recent: 200
+
+splits:
+  seed: researchx-split-v1
+  train: 0.8
+  validation: 0.1                  # remainder -> TEST
+  temporal_cutoff: "2025-07-01"    # published on/after -> TEMPORAL_TEST (spec §28, §52)
+
+fulltext:
+  sample_size: 40                  # v0.1.0 value; v0.2.0 uses the selection-0.1.0 queue (see discovery)
+  prefer: [HTML, PDF]
+  pdf_fallback: false              # v0.2.0: PDF path deferred (v0.1.0 PDF parses had 0 sections)
+
+deep_extraction:                   # llm-extract-0.2.0 (docs/DATASET_DEEPENING.md §8)
+  workers: 14                      # papers processed concurrently (each = 2 model calls; ~57 s median call, gateway retries 429)
+  max_live_calls: 2400             # cost guard: live model calls per run (cached replays are free)
+
+discovery:                         # Layer 0 -> Layer 1/2 selection (docs/DATASET_DEEPENING.md §4)
+  selection_version: selection-0.1.0
+  min_v1_date: "2018-01-01"        # Layer 0 keeps candidates first submitted on/after this date
+  layer0_max: 50000                # Layer 0 target band 20K-50K (deepening §5): stratified cap by priority score
+  layer0_area_min: 1500            # each priority area keeps at least this many Layer 0 candidates
+  require_experiment_signal: true  # Layer 0 = empirical papers (>= 1 experiment signal in the abstract)
+  promote_new_candidates: 500      # new arXiv candidates promoted into the main corpus for full text
+  fulltext_existing_relevant: 400  # v0.1.0 relevant papers (no full text yet) added to the full-text queue
+  per_area_min: 15                 # stratification: at least this many promoted papers per priority area

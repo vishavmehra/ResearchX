@@ -1,0 +1,635 @@
+{
+  "$defs": {
+    "Author": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "orcid": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Orcid"
+        },
+        "raw_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Raw Name"
+        },
+        "source_author_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Author Id"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "title": "Author",
+      "type": "object"
+    },
+    "FulltextFormat": {
+      "enum": [
+        "PDF",
+        "HTML",
+        "XML",
+        "TEI_XML",
+        "STRUCTURED_TEXT"
+      ],
+      "title": "FulltextFormat",
+      "type": "string"
+    },
+    "FulltextInfo": {
+      "additionalProperties": false,
+      "description": "Spec \u00a736 per-document full-text fields.",
+      "properties": {
+        "format": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FulltextFormat"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "full_text_available": {
+          "title": "Full Text Available",
+          "type": "boolean"
+        },
+        "full_text_source": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Full Text Source"
+        },
+        "license_status": {
+          "default": "UNKNOWN",
+          "enum": [
+            "PERMITTED",
+            "RESTRICTED",
+            "UNKNOWN"
+          ],
+          "title": "License Status",
+          "type": "string"
+        },
+        "parsed_path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Parsed Path"
+        },
+        "path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Path"
+        },
+        "retrieval_timestamp": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Retrieval Timestamp"
+        },
+        "retrieval_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Retrieval Url"
+        },
+        "sha256": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sha256"
+        }
+      },
+      "required": [
+        "full_text_available"
+      ],
+      "title": "FulltextInfo",
+      "type": "object"
+    },
+    "LicenseInfo": {
+      "additionalProperties": false,
+      "properties": {
+        "content_license": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Content License"
+        },
+        "license_source": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "License Source"
+        },
+        "metadata_license": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Metadata License"
+        },
+        "redistribution_allowed": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Redistribution Allowed"
+        },
+        "training_allowed": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Training Allowed"
+        }
+      },
+      "title": "LicenseInfo",
+      "type": "object"
+    },
+    "Provenance": {
+      "additionalProperties": false,
+      "description": "Spec \u00a730 minimum provenance fields.",
+      "properties": {
+        "annotator_status": {
+          "$ref": "#/$defs/ReviewerStatus",
+          "default": "UNREVIEWED"
+        },
+        "content_hash": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Content Hash"
+        },
+        "extractor_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Extractor Version"
+        },
+        "parent_record_ids": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Parent Record Ids",
+          "type": "array"
+        },
+        "processing_version": {
+          "title": "Processing Version",
+          "type": "string"
+        },
+        "raw_path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Raw Path"
+        },
+        "retrieved_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Retrieved At"
+        },
+        "source_identifier": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Identifier"
+        },
+        "source_name": {
+          "title": "Source Name",
+          "type": "string"
+        },
+        "source_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Url"
+        },
+        "source_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Version"
+        }
+      },
+      "required": [
+        "source_name",
+        "processing_version"
+      ],
+      "title": "Provenance",
+      "type": "object"
+    },
+    "QualityTier": {
+      "enum": [
+        "GOLD",
+        "SILVER",
+        "BRONZE"
+      ],
+      "title": "QualityTier",
+      "type": "string"
+    },
+    "RecordKind": {
+      "enum": [
+        "PAPER_METADATA",
+        "BENCHMARK_ENTRY"
+      ],
+      "title": "RecordKind",
+      "type": "string"
+    },
+    "ReviewerStatus": {
+      "enum": [
+        "UNREVIEWED",
+        "IN_REVIEW",
+        "REVIEWED",
+        "ADJUDICATED",
+        "DISPUTED"
+      ],
+      "title": "ReviewerStatus",
+      "type": "string"
+    }
+  },
+  "$id": "researchx://schemas/0.2.0/source_record.json",
+  "additionalProperties": false,
+  "description": "One record as delivered by one source (OpenAlex work, S2 paper, arXiv entry, PwC paper).",
+  "properties": {
+    "abstract": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Abstract"
+    },
+    "arxiv_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Arxiv Id"
+    },
+    "arxiv_version": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Arxiv Version"
+    },
+    "authors": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/Author"
+      },
+      "title": "Authors",
+      "type": "array"
+    },
+    "cited_by_count": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Cited By Count"
+    },
+    "doi": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Doi"
+    },
+    "extra": {
+      "additionalProperties": true,
+      "default": {},
+      "title": "Extra",
+      "type": "object"
+    },
+    "fulltext": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/FulltextInfo"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "identifiers": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "default": {},
+      "title": "Identifiers",
+      "type": "object"
+    },
+    "license": {
+      "$ref": "#/$defs/LicenseInfo",
+      "default": {
+        "content_license": null,
+        "license_source": null,
+        "metadata_license": null,
+        "redistribution_allowed": null,
+        "training_allowed": null
+      }
+    },
+    "open_access": {
+      "additionalProperties": true,
+      "default": {},
+      "title": "Open Access",
+      "type": "object"
+    },
+    "provenance": {
+      "$ref": "#/$defs/Provenance"
+    },
+    "publication_date": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Publication Date"
+    },
+    "publication_year": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Publication Year"
+    },
+    "quality_tier": {
+      "$ref": "#/$defs/QualityTier",
+      "default": "BRONZE"
+    },
+    "record_kind": {
+      "$ref": "#/$defs/RecordKind",
+      "default": "PAPER_METADATA"
+    },
+    "record_type": {
+      "const": "source_record",
+      "default": "source_record",
+      "title": "Record Type",
+      "type": "string"
+    },
+    "references": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "References",
+      "type": "array"
+    },
+    "source_identifier": {
+      "title": "Source Identifier",
+      "type": "string"
+    },
+    "source_name": {
+      "title": "Source Name",
+      "type": "string"
+    },
+    "source_record_id": {
+      "title": "Source Record Id",
+      "type": "string"
+    },
+    "source_url": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Source Url"
+    },
+    "source_version": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Source Version"
+    },
+    "title": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Title"
+    },
+    "topics": {
+      "default": [],
+      "items": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "title": "Topics",
+      "type": "array"
+    },
+    "urls": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "default": {},
+      "title": "Urls",
+      "type": "object"
+    },
+    "venue": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Venue"
+    }
+  },
+  "required": [
+    "provenance",
+    "source_record_id",
+    "source_name",
+    "source_identifier"
+  ],
+  "title": "SourceRecord",
+  "type": "object",
+  "x-schema-version": "0.2.0"
+}

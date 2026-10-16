@@ -1,0 +1,262 @@
+{
+ "version": "cache-bench-0.1.0",
+ "pipeline_version": "pipeline-0.3.6",
+ "answer_cache": [
+  {
+   "query": "What learning rate and batch size were used to train HRNetV2 + OCR on ADE20K?",
+   "first_status": "ANSWERED",
+   "cacheable": true,
+   "hit": true,
+   "miss_ms": 9795,
+   "hit_ms": 519,
+   "same_answer": true
+  },
+  {
+   "query": "What top-1 accuracy does BEiT-L achieve on ImageNet-1K?",
+   "first_status": "PARTIAL",
+   "cacheable": true,
+   "hit": true,
+   "miss_ms": 4994,
+   "hit_ms": 471,
+   "same_answer": true
+  },
+  {
+   "query": "Which optimizer and weight decay were used to fine-tune BEiT on ADE20K?",
+   "first_status": "ANSWERED",
+   "cacheable": true,
+   "hit": true,
+   "miss_ms": 7424,
+   "hit_ms": 582,
+   "same_answer": true
+  },
+  {
+   "query": "Which papers evaluate state space models such as Mamba on the Long Range Arena benchmark?",
+   "first_status": "PARTIAL",
+   "cacheable": true,
+   "hit": true,
+   "miss_ms": 5508,
+   "hit_ms": 463,
+   "same_answer": true
+  },
+  {
+   "query": "How does masked image modeling pre-training compare with contrastive pre-training for vision transformers?",
+   "first_status": "ABSTAINED",
+   "cacheable": false,
+   "hit": false,
+   "miss_ms": 4373,
+   "hit_ms": 3556,
+   "same_answer": false
+  },
+  {
+   "query": "Compare the ImageNet top-1 accuracy of vision transformers and convolutional networks reported in the corpus.",
+   "first_status": "PARTIAL",
+   "cacheable": true,
+   "hit": true,
+   "miss_ms": 3665,
+   "hit_ms": 475,
+   "same_answer": true
+  }
+ ],
+ "component_caches": [
+  {
+   "query": "What learning rate and batch size were used to train HRNetV2 + OCR on ADE20K?",
+   "embedding_cache": [
+    "miss",
+    "hit"
+   ],
+   "embedding_ms": [
+    238,
+    0
+   ],
+   "rerank_cache": [
+    "miss",
+    "miss"
+   ],
+   "rerank_ms": [
+    2797,
+    2142
+   ],
+   "total_ms": [
+    13782,
+    9033
+   ],
+   "same_evidence": true
+  },
+  {
+   "query": "What top-1 accuracy does BEiT-L achieve on ImageNet-1K?",
+   "embedding_cache": [
+    "miss",
+    "hit"
+   ],
+   "embedding_ms": [
+    259,
+    0
+   ],
+   "rerank_cache": [
+    "miss",
+    "hit"
+   ],
+   "rerank_ms": [
+    2265,
+    0
+   ],
+   "total_ms": [
+    4683,
+    2841
+   ],
+   "same_evidence": true
+  },
+  {
+   "query": "Which optimizer and weight decay were used to fine-tune BEiT on ADE20K?",
+   "embedding_cache": [
+    "miss",
+    "hit"
+   ],
+   "embedding_ms": [
+    320,
+    0
+   ],
+   "rerank_cache": [
+    "miss",
+    "hit"
+   ],
+   "rerank_ms": [
+    2079,
+    0
+   ],
+   "total_ms": [
+    9123,
+    7571
+   ],
+   "same_evidence": true
+  },
+  {
+   "query": "Which papers evaluate state space models such as Mamba on the Long Range Arena benchmark?",
+   "embedding_cache": [
+    "miss",
+    "hit"
+   ],
+   "embedding_ms": [
+    259,
+    0
+   ],
+   "rerank_cache": [
+    "miss",
+    "hit"
+   ],
+   "rerank_ms": [
+    2324,
+    0
+   ],
+   "total_ms": [
+    9832,
+    6980
+   ],
+   "same_evidence": true
+  },
+  {
+   "query": "How does masked image modeling pre-training compare with contrastive pre-training for vision transformers?",
+   "embedding_cache": [
+    "miss",
+    "hit"
+   ],
+   "embedding_ms": [
+    273,
+    0
+   ],
+   "rerank_cache": [
+    "miss",
+    "hit"
+   ],
+   "rerank_ms": [
+    2693,
+    0
+   ],
+   "total_ms": [
+    4658,
+    2944
+   ],
+   "same_evidence": true
+  },
+  {
+   "query": "Compare the ImageNet top-1 accuracy of vision transformers and convolutional networks reported in the corpus.",
+   "embedding_cache": [
+    "miss",
+    "hit"
+   ],
+   "embedding_ms": [
+    276,
+    0
+   ],
+   "rerank_cache": [
+    "miss",
+    "hit"
+   ],
+   "rerank_ms": [
+    2344,
+    0
+   ],
+   "total_ms": [
+    3923,
+    1949
+   ],
+   "same_evidence": true
+  }
+ ],
+ "external_cache": {
+  "query": "Which benchmarks were used to evaluate Kolmogorov-Arnold Networks against MLPs?",
+  "first_status": "completed",
+  "second_status": "completed",
+  "providers_first": {
+   "semantic_scholar": "failed",
+   "openalex": "completed",
+   "arxiv": "completed",
+   "core": "completed",
+   "openreview": "completed"
+  },
+  "providers_second": {
+   "semantic_scholar": "completed",
+   "openalex": "cache_hit",
+   "arxiv": "cache_hit",
+   "core": "cache_hit",
+   "openreview": "cache_hit"
+  },
+  "external_ms": [
+   2605,
+   1448
+  ],
+  "total_ms": [
+   12676,
+   6563
+  ],
+  "same_sources": false
+ },
+ "summary": {
+  "answer_cache": {
+   "cacheable": 5,
+   "hits": 5,
+   "of": 6,
+   "miss_ms_p50": 5508,
+   "hit_ms_p50": 475,
+   "same_answer": 5
+  },
+  "embedding_cache": {
+   "hits_on_repeat": 6,
+   "of": 6,
+   "miss_ms_p50": 259,
+   "hit_ms_p50": 0
+  },
+  "rerank_cache": {
+   "hits_on_repeat": 5,
+   "of": 6,
+   "miss_ms_p50": 2324,
+   "hit_ms_p50": 0,
+   "same_evidence": 6
+  },
+  "pipeline_total_ms_p50": {
+   "cold": 4683,
+   "warm_components": 2944
+  },
+  "wall_s": 138.9
+ }
+}

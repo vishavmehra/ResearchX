@@ -1,0 +1,42 @@
+# Render Blueprint for the ResearchX API (FastAPI, services/api). The web app is deployed separately on Vercel (apps/web)
+# and forwards /api/* to this service. Secrets are entered in the Render dashboard (sync: false): no value is stored here.
+# Region: Singapore, the Render region closest to the Supabase project (ap-northeast-1).
+# Memory: a fresh instance measured ~280 MB resident after warm-up and one research run (2026-10-16), so 512 MB (Starter)
+# fits; Standard (2 GB) leaves headroom for request-time full-text reading. The plan is chosen when the Blueprint is applied.
+services:
+  - type: web
+    name: researchx-api
+    runtime: python
+    region: singapore
+    plan: starter
+    # The BM25 artifact is not in Git (data/indexes/); it is rebuilt from rx.chunks during the build, so no index is built
+    # at start-up.
+    buildCommand: pip install uv && uv sync --frozen && uv run python scripts/retrieval/build_bm25.py --release 0.2.0
+    startCommand: uv run uvicorn services.api.app:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    autoDeploy: false
+    envVars:
+      - key: RESEARCHX_LAYA
+        value: "0"          # Laya is not deployed; runs trace it as off
+      - key: DATABASE_URL
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_PUBLISHABLE_KEY
+        sync: false
+      - key: NEBIUS_API_KEY
+        sync: false
+      - key: TAVILY_API_KEY
+        sync: false
+      - key: S2_API_KEY
+        sync: false
+      - key: OPENALEX_API_KEY
+        sync: false
+      - key: CORE_API_KEY
+        sync: false
+      - key: RESEARCHX_CONTACT_EMAIL
+        sync: false
+      - key: UNPAYWALL_EMAIL
+        sync: false
+      - key: RESEARCHX_CORS_ORIGINS
+        sync: false         # the public web URL, e.g. https://<project>.vercel.app

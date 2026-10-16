@@ -1,0 +1,57 @@
+# Node / Next.js (apps/web)
+node_modules/
+# browser-automation snapshots and logs (contain test-account e-mails)
+.playwright-mcp/
+.next/
+*.tsbuildinfo
+
+# Python / tooling
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+
+# Secrets (never commit). Only the documented template is versioned.
+.env
+.env.*
+!.env.example
+
+# Data stays local: raw and full-text sources, releases, silver records, indexes and run artifacts are large or
+# license-restricted (spec §31, §32). Only the README, the JSON schemas and the evaluation reports cited in the
+# project README are published. The BM25 artifact is rebuilt from the database by scripts/retrieval/build_bm25.py.
+data/*
+!data/README.md
+!data/schemas/
+!data/reports/
+data/reports/*
+!data/reports/retrieval_eval_v0.2.0.md
+!data/reports/retrieval_eval_v0.2.0.json
+!data/reports/grounding_eval_v0.2.0.md
+!data/reports/grounding_eval_v0.2.0.json
+!data/reports/routing_bench_v0.2.0.md
+!data/reports/routing_bench_v0.2.0.json
+!data/reports/laya_eval.md
+!data/reports/laya_eval.json
+!data/reports/cache_bench_v0.2.0.md
+!data/reports/cache_bench_v0.2.0.json
+
+# Internal working material: agent instructions, plans, demo preparation, audit reports and local tool state. These
+# stay on the developer's machine and are not part of the public repository.
+CLAUDE.md
+AGENTS.md
+.claude/
+.impeccable/
+.remember/
+.planning/
+planning/
+docs/demo/
+docs/RESEARCHX_FINAL_READINESS_REPORT.md
+docs/CAPABILITY_ARCHITECTURE.md
+docs/DATASET_DEEPENING.md
+docs/DATASET_SOURCE_MAP.md
+docs/MANUAL_DOWNLOADS.md
+
+# third-party repositories cloned for inspection
+external/

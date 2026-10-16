@@ -1,0 +1,71 @@
+{
+  "$id": "researchx://schemas/0.2.0/review_item.json",
+  "additionalProperties": false,
+  "description": "A snapshot of a Silver record queued for human review (data/annotations/queue/<batch>.jsonl).",
+  "properties": {
+    "batch_id": {
+      "title": "Batch Id",
+      "type": "string"
+    },
+    "evidence": {
+      "default": [],
+      "items": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "title": "Evidence",
+      "type": "array"
+    },
+    "guideline_version": {
+      "title": "Guideline Version",
+      "type": "string"
+    },
+    "item_id": {
+      "title": "Item Id",
+      "type": "string"
+    },
+    "priority_reason": {
+      "title": "Priority Reason",
+      "type": "string"
+    },
+    "questions": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Questions",
+      "type": "array"
+    },
+    "record": {
+      "additionalProperties": true,
+      "title": "Record",
+      "type": "object"
+    },
+    "record_type": {
+      "const": "review_item",
+      "default": "review_item",
+      "title": "Record Type",
+      "type": "string"
+    },
+    "target_id": {
+      "title": "Target Id",
+      "type": "string"
+    },
+    "target_type": {
+      "title": "Target Type",
+      "type": "string"
+    }
+  },
+  "required": [
+    "item_id",
+    "batch_id",
+    "target_type",
+    "target_id",
+    "priority_reason",
+    "guideline_version",
+    "questions",
+    "record"
+  ],
+  "title": "ReviewItem",
+  "type": "object",
+  "x-schema-version": "0.2.0"
+}

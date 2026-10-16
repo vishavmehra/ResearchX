@@ -1,0 +1,462 @@
+{
+  "$defs": {
+    "ComparisonLabel": {
+      "enum": [
+        "SAME_EXPERIMENT",
+        "ALIGNED_EXPERIMENT",
+        "RELATED_CONTEXT",
+        "MATERIALLY_DIFFERENT",
+        "INSUFFICIENT_EVIDENCE",
+        "CONFLICTING_EVIDENCE",
+        "SAME_STUDY_DIFFERENT_RECORD",
+        "DIFFERENT_STUDY"
+      ],
+      "title": "ComparisonLabel",
+      "type": "string"
+    },
+    "FieldComparison": {
+      "additionalProperties": false,
+      "description": "Spec \u00a716.",
+      "properties": {
+        "comparison_status": {
+          "$ref": "#/$defs/FieldComparisonStatus"
+        },
+        "evidence_a": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Evidence A",
+          "type": "array"
+        },
+        "evidence_b": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Evidence B",
+          "type": "array"
+        },
+        "field_name": {
+          "title": "Field Name",
+          "type": "string"
+        },
+        "rationale": {
+          "title": "Rationale",
+          "type": "string"
+        },
+        "value_a": {
+          "default": null,
+          "title": "Value A"
+        },
+        "value_b": {
+          "default": null,
+          "title": "Value B"
+        }
+      },
+      "required": [
+        "field_name",
+        "comparison_status",
+        "rationale"
+      ],
+      "title": "FieldComparison",
+      "type": "object"
+    },
+    "FieldComparisonStatus": {
+      "enum": [
+        "IDENTICAL",
+        "EQUIVALENT",
+        "MATERIALLY_DIFFERENT",
+        "DIFFERENT",
+        "UNKNOWN",
+        "CONFLICTING",
+        "NOT_APPLICABLE"
+      ],
+      "title": "FieldComparisonStatus",
+      "type": "string"
+    },
+    "Provenance": {
+      "additionalProperties": false,
+      "description": "Spec \u00a730 minimum provenance fields.",
+      "properties": {
+        "annotator_status": {
+          "$ref": "#/$defs/ReviewerStatus",
+          "default": "UNREVIEWED"
+        },
+        "content_hash": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Content Hash"
+        },
+        "extractor_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Extractor Version"
+        },
+        "parent_record_ids": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Parent Record Ids",
+          "type": "array"
+        },
+        "processing_version": {
+          "title": "Processing Version",
+          "type": "string"
+        },
+        "raw_path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Raw Path"
+        },
+        "retrieved_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Retrieved At"
+        },
+        "source_identifier": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Identifier"
+        },
+        "source_name": {
+          "title": "Source Name",
+          "type": "string"
+        },
+        "source_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Url"
+        },
+        "source_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Version"
+        }
+      },
+      "required": [
+        "source_name",
+        "processing_version"
+      ],
+      "title": "Provenance",
+      "type": "object"
+    },
+    "QualityDimensions": {
+      "additionalProperties": false,
+      "description": "Scientific-quality dimensions beside the BRONZE/SILVER/GOLD tier (deepening \u00a729). Unset = not applicable.",
+      "properties": {
+        "artifact_verification_quality": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/QualityLevel"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "comparison_quality": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/QualityLevel"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "configuration_completeness": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/QualityLevel"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "evidence_quality": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/QualityLevel"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "experiment_attribution_quality": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/QualityLevel"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "quality_version": {
+          "title": "Quality Version",
+          "type": "string"
+        },
+        "study_identity_quality": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/QualityLevel"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "quality_version"
+      ],
+      "title": "QualityDimensions",
+      "type": "object"
+    },
+    "QualityLevel": {
+      "enum": [
+        "HUMAN_VERIFIED",
+        "HIGH",
+        "MEDIUM",
+        "LOW",
+        "NONE",
+        "UNKNOWN",
+        "CONFLICTING"
+      ],
+      "title": "QualityLevel",
+      "type": "string"
+    },
+    "QualityTier": {
+      "enum": [
+        "GOLD",
+        "SILVER",
+        "BRONZE"
+      ],
+      "title": "QualityTier",
+      "type": "string"
+    },
+    "ReviewerStatus": {
+      "enum": [
+        "UNREVIEWED",
+        "IN_REVIEW",
+        "REVIEWED",
+        "ADJUDICATED",
+        "DISPUTED"
+      ],
+      "title": "ReviewerStatus",
+      "type": "string"
+    },
+    "Split": {
+      "enum": [
+        "TRAIN",
+        "VALIDATION",
+        "TEST",
+        "GOLD_EVAL",
+        "SAFETY_EVAL",
+        "REGRESSION",
+        "TEMPORAL_TEST",
+        "CROSS_SPLIT",
+        "UNASSIGNED"
+      ],
+      "title": "Split",
+      "type": "string"
+    }
+  },
+  "$id": "researchx://schemas/0.2.0/comparison.json",
+  "additionalProperties": false,
+  "description": "Spec \u00a715. Relationships, not scores.",
+  "properties": {
+    "candidate_generation": {
+      "additionalProperties": true,
+      "default": {},
+      "title": "Candidate Generation",
+      "type": "object"
+    },
+    "comparison_id": {
+      "title": "Comparison Id",
+      "type": "string"
+    },
+    "confidence": {
+      "anyOf": [
+        {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Confidence"
+    },
+    "evidence": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Evidence",
+      "type": "array"
+    },
+    "experiment_a": {
+      "title": "Experiment A",
+      "type": "string"
+    },
+    "experiment_b": {
+      "title": "Experiment B",
+      "type": "string"
+    },
+    "field_comparisons": {
+      "items": {
+        "$ref": "#/$defs/FieldComparison"
+      },
+      "title": "Field Comparisons",
+      "type": "array"
+    },
+    "hard_negative_type": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Hard Negative Type"
+    },
+    "is_hard_negative": {
+      "default": false,
+      "title": "Is Hard Negative",
+      "type": "boolean"
+    },
+    "labeler_version": {
+      "title": "Labeler Version",
+      "type": "string"
+    },
+    "provenance": {
+      "$ref": "#/$defs/Provenance"
+    },
+    "quality": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/QualityDimensions"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "quality_tier": {
+      "$ref": "#/$defs/QualityTier",
+      "default": "SILVER"
+    },
+    "rationale": {
+      "title": "Rationale",
+      "type": "string"
+    },
+    "record_type": {
+      "const": "comparison",
+      "default": "comparison",
+      "title": "Record Type",
+      "type": "string"
+    },
+    "relationship_label": {
+      "$ref": "#/$defs/ComparisonLabel"
+    },
+    "reviewer_status": {
+      "$ref": "#/$defs/ReviewerStatus",
+      "default": "UNREVIEWED"
+    },
+    "split": {
+      "$ref": "#/$defs/Split",
+      "default": "UNASSIGNED"
+    },
+    "uncertainty": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Uncertainty"
+    }
+  },
+  "required": [
+    "provenance",
+    "comparison_id",
+    "experiment_a",
+    "experiment_b",
+    "relationship_label",
+    "field_comparisons",
+    "rationale",
+    "labeler_version"
+  ],
+  "title": "Comparison",
+  "type": "object",
+  "x-schema-version": "0.2.0"
+}

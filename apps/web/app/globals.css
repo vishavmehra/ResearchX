@@ -1,0 +1,127 @@
+@import "tailwindcss";
+
+/* ResearchX: an evidence-first research desk. Paper and ink, one teal accent for actions, semantic colours only for
+   verdicts (supported / partial / conflicting / failed). No gradients, no glass. */
+:root {
+  --bg: #f6f5f1;
+  --surface: #ffffff;
+  --surface-2: #f0efe9;
+  --ink: #16181d;
+  --muted: #5b616d;
+  --faint: #8a8f99;
+  --line: #e3e1d9;
+  --accent: #0e6b66;
+  --accent-ink: #ffffff;
+  --accent-soft: #e2f0ee;
+  --ok: #1e7a46;
+  --ok-soft: #e4f3ea;
+  --warn: #8f5405;
+  --warn-soft: #fbf0dc;
+  --bad: #b42318;
+  --bad-soft: #fbe9e7;
+  --info-soft: #eef1f6;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0e1014;
+    --surface: #15181e;
+    --surface-2: #1b1f26;
+    --ink: #e7e8eb;
+    --muted: #a0a6b1;
+    --faint: #737985;
+    --line: #262b33;
+    --accent: #58b8ad;
+    --accent-ink: #06201e;
+    --accent-soft: #11302d;
+    --ok: #4cc283;
+    --ok-soft: #10291c;
+    --warn: #e2a64a;
+    --warn-soft: #2c2111;
+    --bad: #f07a6e;
+    --bad-soft: #2f1512;
+    --info-soft: #1a2029;
+    color-scheme: dark;
+  }
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
+  --color-ok: var(--ok);
+  --color-ok-soft: var(--ok-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-bad: var(--bad);
+  --color-bad-soft: var(--bad-soft);
+  --color-info-soft: var(--info-soft);
+  --font-sans: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-source-serif), ui-serif, Georgia, serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, SFMono-Regular, monospace;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+::selection {
+  background: var(--accent-soft);
+}
+
+@keyframes rx-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes rx-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.rx-spin {
+  animation: rx-spin 0.9s linear infinite;
+}
+
+.rx-enter {
+  animation: rx-fade-in 160ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

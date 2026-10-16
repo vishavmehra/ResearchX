@@ -1,0 +1,137 @@
+{
+  "$defs": {
+    "FailureCategory": {
+      "enum": [
+        "retrieval_failure",
+        "query_failure",
+        "extraction_failure",
+        "parsing_failure",
+        "canonicalization_failure",
+        "deduplication_failure",
+        "study_linking_failure",
+        "comparison_failure",
+        "citation_failure",
+        "hallucination",
+        "contradiction_missed",
+        "wrong_abstention",
+        "wrong_laya_decision",
+        "wrong_tool_selection",
+        "prompt_injection",
+        "security_failure",
+        "media_grounding_failure",
+        "dataset_error",
+        "license_error",
+        "infrastructure_failure"
+      ],
+      "title": "FailureCategory",
+      "type": "string"
+    }
+  },
+  "$id": "researchx://schemas/0.2.0/failure.json",
+  "additionalProperties": false,
+  "description": "Spec \u00a724.",
+  "properties": {
+    "category": {
+      "$ref": "#/$defs/FailureCategory"
+    },
+    "details": {
+      "additionalProperties": true,
+      "default": {},
+      "title": "Details",
+      "type": "object"
+    },
+    "expected_behavior": {
+      "title": "Expected Behavior",
+      "type": "string"
+    },
+    "failure_id": {
+      "title": "Failure Id",
+      "type": "string"
+    },
+    "input": {
+      "title": "Input",
+      "type": "string"
+    },
+    "observed_behavior": {
+      "title": "Observed Behavior",
+      "type": "string"
+    },
+    "record_type": {
+      "const": "failure",
+      "default": "failure",
+      "title": "Record Type",
+      "type": "string"
+    },
+    "regression_test_created": {
+      "default": false,
+      "title": "Regression Test Created",
+      "type": "boolean"
+    },
+    "reproducibility": {
+      "default": "UNKNOWN",
+      "enum": [
+        "ALWAYS",
+        "INTERMITTENT",
+        "UNKNOWN"
+      ],
+      "title": "Reproducibility",
+      "type": "string"
+    },
+    "root_cause": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Root Cause"
+    },
+    "run_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Run Id"
+    },
+    "severity": {
+      "default": "MEDIUM",
+      "enum": [
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ],
+      "title": "Severity",
+      "type": "string"
+    },
+    "stage": {
+      "title": "Stage",
+      "type": "string"
+    },
+    "timestamp": {
+      "format": "date-time",
+      "title": "Timestamp",
+      "type": "string"
+    }
+  },
+  "required": [
+    "failure_id",
+    "category",
+    "stage",
+    "timestamp",
+    "input",
+    "expected_behavior",
+    "observed_behavior"
+  ],
+  "title": "FailureCase",
+  "type": "object",
+  "x-schema-version": "0.2.0"
+}

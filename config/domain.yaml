@@ -1,0 +1,127 @@
+# Research domain configuration (DATASET_SPEC §5: the domain must remain configurable).
+# Areas drive (a) OpenAlex candidate queries and (b) the deterministic relevance filter.
+# Term matches are candidate-selection signals only; they never create labels.
+domain_id: ml_cs
+version: "0.1.0"
+description: Machine learning / computer science priority areas (DATASET_SPEC §5, §34)
+
+field_check:
+  openalex_field_ids: ["https://openalex.org/fields/17"]   # Computer Science
+  arxiv_category_prefixes: ["cs.", "stat.ML", "eess.AS", "eess.IV", "eess.SP"]
+  s2_fields_of_study: ["Computer Science"]
+
+openalex:
+  # indexed_in:arxiv keeps a legal, versioned full-text path (arXiv) for every candidate.
+  base_filter: "indexed_in:arxiv,primary_topic.field.id:17,type:article|preprint,publication_year:2019-2026"
+  # Filter-only discovery used when OpenAlex search is unavailable (topic ids verified 2026-09-30
+  # via /topics?filter=subfield.id:1702|1707|1708|1710). Broad on purpose: the keyword relevance
+  # filter below decides priority-area membership.
+  fallback_topics:
+    - {id: T10181, name: Natural Language Processing Techniques}
+    - {id: T10028, name: Topic Modeling}
+    - {id: T10320, name: Neural Networks and Applications}
+    - {id: T11689, name: Adversarial Robustness in Machine Learning}
+    - {id: T11307, name: Domain Adaptation and Few-Shot Learning}
+    - {id: T12031, name: Speech and dialogue systems}
+    - {id: T10201, name: Speech Recognition and Synthesis}
+    - {id: T12026, name: Explainable Artificial Intelligence (XAI)}
+    - {id: T11612, name: Stochastic Gradient Optimization Techniques}
+    - {id: T10906, name: AI-based Problem Solving and Planning}
+    - {id: T10456, name: Multi-Agent Systems and Negotiation}
+    - {id: T12535, name: Machine Learning and Data Classification}
+    - {id: T11714, name: Multimodal Machine Learning Applications}
+    - {id: T10036, name: Advanced Neural Network Applications}
+    - {id: T10627, name: Advanced Image and Video Retrieval Techniques}
+    - {id: T10775, name: Generative Adversarial Networks and Image Synthesis}
+    - {id: T10203, name: Recommender Systems and Techniques}
+    - {id: T10054, name: Parallel Computing and Optimization Techniques}
+    - {id: T10260, name: Software Engineering Research}
+
+areas:
+  llm:
+    label: Large language models
+    openalex_query: '"large language model" OR "large language models"'
+    terms:
+      - {pattern: 'large language models?'}
+      - {pattern: '\bLLMs?\b', case_sensitive: true}
+  rag:
+    label: Retrieval-augmented generation
+    openalex_query: '"retrieval-augmented generation" OR "retrieval augmented generation"'
+    terms:
+      - {pattern: 'retrieval[- ]augmented'}
+      - {pattern: '\bRAG\b', case_sensitive: true}
+  retrieval:
+    label: Information retrieval
+    openalex_query: '"dense retrieval" OR "passage retrieval" OR "neural retrieval"'
+    terms:
+      - {pattern: '\b(dense|passage|neural|document) retrieval\b'}
+      - {pattern: '\bre-?rank(ing|er)s?\b'}
+      - {pattern: '\binformation retrieval\b'}
+  agents:
+    label: AI agents
+    openalex_query: '"LLM agents" OR "language agents" OR "autonomous agents" OR "tool learning" OR "agentic"'
+    terms:
+      - {pattern: '\b(llm|language|autonomous|web|software) agents?\b'}
+      - {pattern: '\btool[- ](use|learning|augmented)\b'}
+      - {pattern: '\bagentic\b'}
+  fine_tuning:
+    label: Fine-tuning
+    openalex_query: '"instruction tuning" OR "supervised fine-tuning" OR "fine-tuning large language models"'
+    terms:
+      - {pattern: '\bfine[- ]tun(e|ed|ing)\b'}
+      - {pattern: '\binstruction[- ]tun(ed|ing)\b'}
+      - {pattern: '\bSFT\b', case_sensitive: true}
+  peft:
+    label: Parameter-efficient fine-tuning (LoRA / QLoRA / DoRA)
+    openalex_query: '"parameter-efficient fine-tuning" OR "low-rank adaptation" OR LoRA OR QLoRA OR "prefix tuning"'
+    terms:
+      - {pattern: '\bparameter[- ]efficient\b'}
+      - {pattern: '\blow[- ]rank adaptation\b'}
+      - {pattern: '\b(LoRA|QLoRA|DoRA)\b', case_sensitive: true}
+      - {pattern: '\b(prefix|prompt)[- ]tuning\b'}
+      - {pattern: '\badapter[- ](tuning|modules?|layers?)\b'}
+  multimodal:
+    label: Multimodal models
+    openalex_query: '"vision-language model" OR "multimodal large language model" OR "vision language models"'
+    terms:
+      - {pattern: '\bmulti-?modal\b'}
+      - {pattern: '\bvision[- ]language\b'}
+      - {pattern: '\b(VLMs?|MLLMs?)\b', case_sensitive: true}
+  quantization:
+    label: Quantization
+    openalex_query: '"post-training quantization" OR "quantization-aware training" OR "low-bit quantization" OR "weight quantization"'
+    terms:
+      - {pattern: '\bquantiz(ation|ed|ing)\b'}
+      - {pattern: '\blow[- ]bit\b'}
+      - {pattern: '\b(GPTQ|AWQ)\b', case_sensitive: true}
+  efficient_inference:
+    label: Efficient inference / compression
+    openalex_query: '"speculative decoding" OR "efficient inference" OR "KV cache" OR "model compression" OR "knowledge distillation"'
+    terms:
+      - {pattern: '\bspeculative decoding\b'}
+      - {pattern: '\befficient inference\b'}
+      - {pattern: '\bKV[- ]cache\b', case_sensitive: true}
+      - {pattern: '\bmodel compression\b'}
+      - {pattern: '\b(pruning|knowledge distillation)\b'}
+  evaluation:
+    label: Model evaluation / benchmarks
+    openalex_query: '"evaluating large language models" OR "LLM evaluation" OR "benchmark for large language models" OR "LLM-as-a-judge"'
+    terms:
+      - {pattern: '\bbenchmark(s|ing)?\b'}
+      - {pattern: '\bevaluation (framework|suite|protocol|methodology)\b'}
+      - {pattern: '\bLLM[- ]as[- ]a[- ]judge\b'}
+  safety:
+    label: AI safety / evaluation
+    openalex_query: '"jailbreak" OR "red teaming" OR "AI safety" OR "LLM alignment" OR "hallucination detection"'
+    terms:
+      - {pattern: '\bjailbreak(s|ing)?\b'}
+      - {pattern: '\bred[- ]teaming\b'}
+      - {pattern: '\b(AI|LLM|model) safety\b'}
+      - {pattern: '\bhallucinat(ion|ions|e|ing)\b'}
+      - {pattern: '\balignment\b'}
+  reasoning:
+    label: Reasoning models
+    openalex_query: '"chain-of-thought" OR "reasoning models" OR "mathematical reasoning"'
+    terms:
+      - {pattern: '\bchain[- ]of[- ]thought\b'}
+      - {pattern: '\breasoning\b'}
