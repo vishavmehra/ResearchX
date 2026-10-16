@@ -156,7 +156,7 @@ outside, and only with the providers suited to what is missing:
 ### Request flow
 
 ```mermaid
-flowchart TD
+flowchart LR
     Q["Research question"] --> C{"Answer cached<br/>for this user?"}
     C -- "hit" --> OUT["Answer with citations<br/>+ Research Trace"]
     C -- "miss" --> H["Internal hybrid retrieval<br/>BM25 + pgvector<br/>(Qwen3-Embedding-8B via Nebius)"]
