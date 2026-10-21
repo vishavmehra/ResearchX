@@ -2,7 +2,7 @@
 # and forwards /api/* to this service. Secrets are entered in the Render dashboard (sync: false): no value is stored here.
 # Region: Singapore, the Render region closest to the Supabase project (ap-northeast-1).
 # Plan: Free (512 MB; a fresh instance measured ~280 MB resident after warm-up and one research run, 2026-10-16). A Free
-# service spins down when idle; .github/workflows/render-keepalive.yml pings it (best effort). Laya stays off on this plan.
+# service spins down when idle; an external uptime monitor requests /api/openapi.json every 5 minutes (best effort). Laya stays off on this plan.
 # DATABASE_URL must be the Supabase session pooler URL (IPv4): Render has no outbound IPv6 and the direct host is IPv6-only.
 services:
   - type: web
