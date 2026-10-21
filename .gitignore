@@ -19,10 +19,14 @@ __pycache__/
 !.env.example
 
 # Data stays local: raw and full-text sources, releases, silver records, indexes and run artifacts are large or
-# license-restricted (spec §31, §32). Only the JSON schemas and the evaluation reports cited in the project README are
-# published. The BM25 artifact is rebuilt from the database by scripts/retrieval/build_bm25.py.
+# license-restricted (spec §31, §32). Only the JSON schemas, the evaluation reports cited in the project README and the
+# licence table the request-time full-text reader needs (services/runtime/reader.py) are published. The BM25 artifact is
+# rebuilt from the database by scripts/retrieval/build_bm25.py.
 data/*
 !data/schemas/
+!data/manifests/
+data/manifests/*
+!data/manifests/licenses.yaml
 !data/reports/
 data/reports/*
 !data/reports/retrieval_eval_v0.2.0.md

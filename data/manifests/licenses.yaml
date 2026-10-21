@@ -1,0 +1,106 @@
+# License definitions used by sources.yaml, contamination.yaml and record-level LicenseInfo.
+# Flags are conservative: null = unknown = treat as NOT allowed (DATASET_SPEC §8, §31).
+# "permitted" full-text storage requires redistribution_allowed AND commercial_use AND no ND.
+verification_date: "2026-09-30"
+licenses:
+  CC0-1.0:
+    name: Creative Commons Zero 1.0 (public domain dedication)
+    url: https://creativecommons.org/publicdomain/zero/1.0/
+    aliases: ["cc0", "cc zero", "cc0 1.0", "public-domain"]
+    redistribution_allowed: true
+    training_allowed: true
+    commercial_use: true
+    attribution_required: false
+    share_alike: false
+  CC-BY-4.0:
+    name: Creative Commons Attribution 4.0
+    url: https://creativecommons.org/licenses/by/4.0/
+    aliases: ["cc by 4.0", "cc-by 4.0", "cc-by-4.0", "http://creativecommons.org/licenses/by/4.0/"]
+    redistribution_allowed: true
+    training_allowed: true
+    commercial_use: true
+    attribution_required: true
+    share_alike: false
+  CC-BY-SA-4.0:
+    name: Creative Commons Attribution-ShareAlike 4.0
+    url: https://creativecommons.org/licenses/by-sa/4.0/
+    aliases: ["cc by-sa 4.0", "cc-by-sa-4.0", "cc-by-sa 4.0", "http://creativecommons.org/licenses/by-sa/4.0/"]
+    redistribution_allowed: true
+    training_allowed: true
+    commercial_use: true
+    attribution_required: true
+    share_alike: true    # derived datasets that include this content must be CC BY-SA if redistributed
+  CC-BY-NC-4.0:
+    name: Creative Commons Attribution-NonCommercial 4.0
+    url: https://creativecommons.org/licenses/by-nc/4.0/
+    aliases: ["cc by-nc 4.0", "cc-by-nc-4.0", "http://creativecommons.org/licenses/by-nc/4.0/"]
+    redistribution_allowed: true
+    training_allowed: null
+    commercial_use: false
+    attribution_required: true
+    share_alike: false
+  CC-BY-NC-SA-4.0:
+    name: Creative Commons Attribution-NonCommercial-ShareAlike 4.0
+    url: https://creativecommons.org/licenses/by-nc-sa/4.0/
+    aliases: ["cc by-nc-sa 4.0", "cc-by-nc-sa-4.0", "http://creativecommons.org/licenses/by-nc-sa/4.0/"]
+    redistribution_allowed: true
+    training_allowed: null
+    commercial_use: false
+    attribution_required: true
+    share_alike: true
+  CC-BY-ND-4.0:
+    name: Creative Commons Attribution-NoDerivatives 4.0
+    url: https://creativecommons.org/licenses/by-nd/4.0/
+    aliases: ["cc by-nd 4.0", "cc-by-nd-4.0"]
+    redistribution_allowed: true
+    training_allowed: null
+    commercial_use: true
+    no_derivatives: true
+    attribution_required: true
+  CC-BY-NC-ND-4.0:
+    name: Creative Commons Attribution-NonCommercial-NoDerivatives 4.0
+    url: https://creativecommons.org/licenses/by-nc-nd/4.0/
+    aliases: ["cc by-nc-nd 4.0", "cc-by-nc-nd-4.0", "http://creativecommons.org/licenses/by-nc-nd/4.0/"]
+    redistribution_allowed: true
+    training_allowed: null
+    commercial_use: false
+    no_derivatives: true
+    attribution_required: true
+  ARXIV-NONEXCLUSIVE-1.0:
+    name: arXiv.org perpetual, non-exclusive license to distribute
+    url: http://arxiv.org/licenses/nonexclusive-distrib/1.0/
+    aliases: ["arxiv.org perpetual non-exclusive license", "nonexclusive-distrib"]
+    # Grants arXiv (not third parties) distribution rights. arXiv ToU: content may be retrieved,
+    # stored and used "for your own personal use, or for research purposes", not redistributed.
+    redistribution_allowed: false
+    training_allowed: null
+    commercial_use: false
+    internal_research_use: true
+    attribution_required: true
+  ODC-BY-1.0:
+    name: Open Data Commons Attribution License 1.0
+    url: https://opendatacommons.org/licenses/by/1-0/
+    aliases: ["odc-by"]
+    redistribution_allowed: true
+    training_allowed: true
+    commercial_use: true
+    attribution_required: true
+  S2-API-LICENSE:
+    name: Semantic Scholar API License Agreement
+    url: https://www.semanticscholar.org/product/api/license
+    aliases: []
+    # Must not "repackage, sell, rent, lease, lend, distribute, or sublicense the API"; data is
+    # governed by accompanying licenses (e.g. CC BY-NC, ODC-BY). No explicit training clause.
+    redistribution_allowed: false
+    training_allowed: null
+    commercial_use: null
+    internal_research_use: true
+    attribution_required: true
+  UNKNOWN:
+    name: Unknown or unverified license
+    url: ""
+    aliases: []
+    redistribution_allowed: null
+    training_allowed: null
+    commercial_use: null
+    attribution_required: null
