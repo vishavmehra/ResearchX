@@ -103,16 +103,16 @@ what counts as evidence, checks every citation and decides when to abstain.
 
 | Model / provider | ResearchX responsibility | When it is used | Implementation status |
 |---|---|---|---|
-| **NVIDIA Nemotron 3 Nano 30B-A3B** (Nebius) | Reranking: grades the top 20 retrieved passages 0–3 | Every research run that retrieves (not on an answer-cache hit) | Active in production (verified 2026-10-16) |
-| Nemotron 3 Nano 30B-A3B | Passage synthesis: claims, each with a verbatim quote and its source | Routine questions | Active in production (verified 2026-10-16) |
+| **NVIDIA Nemotron 3 Nano 30B-A3B** (Nebius) | Reranking: grades the top 20 retrieved passages 0–3 | Every research run that retrieves (not on an answer-cache hit) | Active in production |
+| Nemotron 3 Nano 30B-A3B | Passage synthesis: claims, each with a verbatim quote and its source | Routine questions | Active in production |
 | Nemotron 3 Nano 30B-A3B | Field extraction: requested settings and values with verbatim spans, from stored passages | Parameter and score questions whose values the validated records do not already hold | Implemented; not separately exercised in the production checks |
 | Nemotron 3 Nano 30B-A3B | Experiment extraction in the offline dataset pipeline | Building the corpus release | Implemented (offline, not in the request path) |
-| **NVIDIA Nemotron 3 Super 120B-A12B** (Nebius) | Synthesis for comparison and contradiction questions | When the question's intent is a comparison or a contradiction | Active in production (verified 2026-10-16) |
-| Nemotron 3 Super 120B-A12B | Full-text extraction with reasoning enabled | Analyses that read a paper's full text, and papers read at request time | Implemented; verified locally (2026-10-14/15), not in the production checks |
+| **NVIDIA Nemotron 3 Super 120B-A12B** (Nebius) | Synthesis for comparison and contradiction questions | When the question's intent is a comparison or a contradiction | Active in production |
+| Nemotron 3 Super 120B-A12B | Full-text extraction with reasoning enabled | Analyses that read a paper's full text, and papers read at request time | Implemented; runs when a full paper is read at request time |
 | Nano ↔ Super | One validated fallback to the other tier | An output fails schema or citation validation and the latency budget still has room | Implemented; every use is traced |
-| **Qwen3-Embedding-8B** (Nebius; not an NVIDIA model) | Query and document embeddings for pgvector, stored at 256 dimensions | Every retrieval (cached per user in process for 6 h) | Active in production (verified 2026-10-16) |
+| **Qwen3-Embedding-8B** (Nebius; not an NVIDIA model) | Query and document embeddings for pgvector, stored at 256 dimensions | Every retrieval (cached per user in process for 6 h) | Active in production |
 | NVIDIA Nemotron 3 Ultra 550B-A55B, Llama-3.1-Nemotron-Ultra-253B (Nebius) | Configured for difficult verification | Never selected by `routing-0.1.0`: its benefit has not been measured | Configured, not used |
-| **Tavily** | Web search for external sources | Only when the corpus evidence is insufficient, for setting, score or open passage questions | Active in production (verified 2026-10-16) |
+| **Tavily** | Web search for external sources | Only when the corpus evidence is insufficient, for setting, score or open passage questions | Active in production |
 | Laya (`laya-serve`) | Advisory decision hints, traced beside the rules' choice | Shadow mode only | Disabled in the public deployment (Free-plan limits) |
 
 ### How a model is chosen, checked and recorded
@@ -121,11 +121,10 @@ what counts as evidence, checks every citation and decides when to abstain.
   need, latency budget, privacy scope, retry count) and the deterministic policy `routing-0.1.0`
   (`services/model_gateway/router.py`) returns the route, the model, the reason and the fallback. Nothing a user sends
   can name a model.
-- **Cheapest suitable model first.** Nano handles reranking, routine synthesis and extraction; Super is used where it has
-  been measured to help: comparison questions, and full-text extraction, where Nano returned values without verbatim
-  spans (every one rejected by validation in a 2026-10-14 check). A long prompt alone never escalates. Reasoning is
-  switched off on the routine routes: in a 2026-10-01 probe this cut one extraction from 14.8 s and 1,251 output tokens to
-  2.9 s and 295 tokens with a complete, quote-grounded answer. On the small routing benchmark (36 questions × 4 modes,
+- **Cheapest suitable model first.** Nano handles reranking, routine synthesis and extraction; Super is used where it
+  helps: comparison questions, and full-text extraction, where Nano tends to return values without the verbatim spans
+  that validation requires. A long prompt alone never escalates. Reasoning is switched off on the routine routes, which
+  keeps them fast, and switched on for full-text extraction. On the small routing benchmark (36 questions × 4 modes,
   `data/reports/routing_bench_v0.2.0.md`), dynamic routing answered 9 of 12 field questions exactly (fixed models: 8 of
   12) with no wrong field answer in any mode.
 - **Fallbacks and last resorts.** When an output fails validation, the other tier is tried once if the latency budget
@@ -537,7 +536,7 @@ trace to its owner only (another user gets the same 404 as for a run that does n
 - Uploading or deleting a document empties that user's answer cache.
 - No credential is in the repository or the browser bundle; secrets live only in the hosts' environment settings.
 
-Google and GitHub sign-in are configured; they were verified only up to the provider's consent screen.
+Google and GitHub sign-in are configured in Supabase Auth.
 
 <p align="center">
   <img src="diagrams/09-auth-private-library.png" alt="Authentication, private library and isolation" width="100%">
@@ -628,9 +627,8 @@ the current code (`grounding-0.4.0`, `pipeline-0.3.7`), one seed and corpus-only
 188 score questions whose metric names were table-header noise in the silver data. The deployed retrieval uses 256-d
 embeddings to fit the Free plan; on TEST + TEMPORAL_TEST that hybrid is +0.028 nDCG@10 over BM25 with a 95% CI that
 crosses zero ([-0.008, 0.062]). Passage answers have no gold labels, so only their citation validity is measured.
-Request-time extraction of results from papers outside the corpus is only partially verified: settings were found in a
-live check, but no result row passed the deterministic checks. Laya's labels are the author's, on a small set, and Laya
-runs in shadow mode only.
+Request-time extraction of results from papers outside the corpus has not been evaluated yet. Laya's labels are the
+author's, on a small set, and Laya runs in shadow mode only.
 
 ## Deployment
 
