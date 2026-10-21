@@ -13,6 +13,9 @@ researchers compare papers, investigate discrepancies, rebuild experimental reci
 
 **Live demo: [researchx-navy.vercel.app](https://researchx-navy.vercel.app)**
 
+**Full walkthrough video (21 min, best at 1.5×): [walkthrough/ResearchX_Full_Walkthrough.mp4](walkthrough/ResearchX_Full_Walkthrough.mp4)**
+· [about the demo videos](#demo-videos)
+
 A shared account is available for judges and reviewers:
 
 | | |
@@ -37,6 +40,22 @@ a while, the first request can take up to a minute while the service starts.
   test) and the second run's Research Trace shows the query embedding served from cache (`embedding_cache: hit`)
   instead of a new model call. Answer caching resumes as soon as the database is below the guard again.
 - **Laya is off** because of the Free-plan constraints (see [Laya](#laya-advisory-only) for how to turn it on).
+
+### Demo videos
+
+- **Hackathon submission demo:** we submitted a shorter version of the ResearchX demo to keep the main presentation
+  concise.
+- **Full detailed walkthrough:** for a complete, in-depth tour of ResearchX, including its research workflow, retrieval
+  pipeline, model routing, specialized analysis tools, Knowledge Map, evidence handling, caching, document library,
+  security, and NVIDIA Nemotron integration through Nebius Token Factory, watch the
+  **[full walkthrough](walkthrough/ResearchX_Full_Walkthrough.mp4)** (21 min, 1920×1080, 88 MB; GitHub may offer it as a
+  download rather than play it in the page).
+- **Recommended playback speed: 1.5×** for a faster viewing experience.
+
+The walkthrough was recorded on the live deployment on 2026-10-21 and narrated with a synthetic voice. Everything shown
+in the application is real output. It also says where the public deployment differs from the full design: Laya is off
+and answer-cache writes are paused (the limits above), and the architecture diagrams and offline evaluation figures near
+the end are explanations, not live output.
 
 The suggested path through the product:
 
