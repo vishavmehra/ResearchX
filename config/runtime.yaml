@@ -26,7 +26,7 @@ retrieval:
   embedding_hedge_s: 0.45   # first request still running after this: send a second, use the first answer (p50 0.42 s, p90 1.96 s on 2026-10-09)
   rrf_k: 10                 # tuned on VALIDATION
   dense_weight: 2.0         # tuned on VALIDATION (BM25 weight 1.0)
-  rerank_top: 20            # hybrid + LLM rerank: +0.060 nDCG@10 over hybrid, 95% CI [0.037, 0.082]
+  rerank_top: 20            # hybrid + LLM rerank: +0.051 nDCG@10 over the 1024-d hybrid, 95% CI [0.029, 0.074]
 
 evidence:
   max_internal_sources: 8
